@@ -1,0 +1,46 @@
+name: Monitorar preços da viagem
+
+on:
+  schedule:
+    - cron: "0 12 * * *"
+
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  monitorar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar arquivos do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Instalar dependências
+        run: npm install
+
+      - name: Instalar navegador
+        run: npx playwright install --with-deps chromium
+
+      - name: Consultar preços
+        run: npm run monitor
+
+      - name: Salvar preços atualizados
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add data/precos.json
+
+          if git diff --cached --quiet; then
+            echo "Nenhuma alteração nos preços."
+          else
+            git commit -m "Atualizar preços da viagem"
+            git push
+          fi
