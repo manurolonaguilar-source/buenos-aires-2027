@@ -91,6 +91,18 @@ h2{font-size:22px;margin:0 0 15px} h3{font-size:17px;margin:0 0 7px}
 .timeline-title{font-weight:800}
 .timeline-meta{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.45}
 .timeline-price{font-size:12px;font-weight:800;margin-top:7px}
+.itinerary-item-card{display:grid;grid-template-columns:92px 1fr;gap:14px;align-items:stretch}
+.itinerary-thumb{width:92px;height:92px;border-radius:12px;background:#eee center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-size:30px;overflow:hidden}
+.itinerary-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.visit-photo{height:170px;border-radius:13px;background:#eee center/cover no-repeat;margin-bottom:13px}
+.visit-box{margin-top:10px;padding:10px 11px;border-radius:11px;background:#f7f3ef;border:1px solid var(--line);font-size:11px}
+.visit-box strong{font-size:12px}
+.visit-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:10px}
+.visit-check{width:19px;height:19px;accent-color:var(--green)}
+.main-payment{margin-top:8px;padding:12px;border:1px solid var(--line);border-radius:13px;background:#faf8f6}
+.main-payment-title{font-size:11px;font-weight:850;margin-bottom:8px}
+.cost-payment{margin-top:5px;font-size:10px;color:var(--muted)}
+.cost-payment strong{color:var(--ink)}
 .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 .place-img{height:185px;border-radius:13px;background:#ddd center/cover no-repeat;margin:-2px -2px 14px}
 .place-info{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0}
@@ -173,7 +185,7 @@ table{width:100%;border-collapse:collapse}th,td{padding:11px;border-bottom:1px s
 .payment-summary{font-size:11px;color:var(--muted);line-height:1.5}
 .payment-summary strong{color:var(--ink)}
 @media(max-width:1050px){.itinerary-overview{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:620px){.itinerary-overview{grid-template-columns:1fr}.payment-grid{grid-template-columns:1fr}}
+@media(max-width:620px){.itinerary-overview{grid-template-columns:1fr}.payment-grid{grid-template-columns:1fr}.itinerary-item-card{grid-template-columns:68px 1fr}.itinerary-thumb{width:68px;height:68px}.visit-photo{height:135px}}
 @media(max-width:900px){.price-monitor{grid-template-columns:1fr}}
 </style>
 </head>
@@ -368,8 +380,8 @@ table{width:100%;border-collapse:collapse}th,td{padding:11px;border-bottom:1px s
       <div class="card">
         <h2>Custos principais</h2>
         <div class="formgrid">
-          <div class="field"><label>Passagens aéreas · 2 pessoas (R$)</label><input id="cfgFlights" type="number" step="0.01"></div>
-          <div class="field"><label>Airbnb · estadia completa (R$)</label><input id="cfgAirbnb" type="number" step="0.01"></div>
+          <div class="field"><label>Passagens aéreas · 2 pessoas (R$)</label><input id="cfgFlights" type="number" step="0.01" oninput="atualizarPagamentoPrincipal('flights')"></div>
+          <div class="field"><label>Airbnb · estadia completa (R$)</label><input id="cfgAirbnb" type="number" step="0.01" oninput="atualizarPagamentoPrincipal('airbnb')"></div>
           <div class="field"><label>Carro Dourados ↔ Foz · combustível + pedágios (R$)</label><input id="cfgRoad" type="number" step="0.01"></div>
           <div class="field"><label>Hotel em Foz, se necessário (R$)</label><input id="cfgFozHotel" type="number" step="0.01"></div>
           <div class="field"><label>Transporte em Buenos Aires (R$)</label><input id="cfgLocalTransport" type="number" step="0.01"></div>
@@ -378,7 +390,35 @@ table{width:100%;border-collapse:collapse}th,td{padding:11px;border-bottom:1px s
           <div class="field"><label>Seguro viagem (R$)</label><input id="cfgInsurance" type="number" step="0.01"></div>
           <div class="field"><label>Reserva para extras/compras (R$)</label><input id="cfgMisc" type="number" step="0.01"></div>
         </div>
-        <button class="btn" onclick="salvarConfig()">Salvar valores</button>
+
+        <div class="two" style="margin-top:4px">
+          <div class="main-payment">
+            <div class="main-payment-title">✈️ Pagamento da passagem</div>
+            <div class="payment-grid">
+              <div class="field"><label>Forma de pagamento</label><select id="cfgFlightsPayment" onchange="atualizarPagamentoPrincipal('flights')"><option value="cash">À vista</option><option value="card">Cartão</option></select></div>
+              <div class="field"><label>Parcelas</label><select id="cfgFlightsInstallments" onchange="atualizarPagamentoPrincipal('flights')">${Array.from({length:12},(_,i)=>`<option value="${i+1}">${i+1}x</option>`).join("")}</select></div>
+              <div class="field"><label>Juros</label><select id="cfgFlightsInterest" onchange="atualizarPagamentoPrincipal('flights')"><option value="false">Sem juros</option><option value="true">Com juros</option></select></div>
+              <div class="field"><label>Valor de cada parcela</label><input id="cfgFlightsInstallmentValue" type="number" step="0.01" readonly></div>
+            </div>
+            <div id="cfgFlightsPaymentHelp" class="payment-summary"></div>
+          </div>
+
+          <div class="main-payment">
+            <div class="main-payment-title">🏠 Pagamento do Airbnb</div>
+            <div class="payment-grid">
+              <div class="field"><label>Forma de pagamento</label><select id="cfgAirbnbPayment" onchange="atualizarPagamentoPrincipal('airbnb')"><option value="cash">À vista</option><option value="card">Cartão</option></select></div>
+              <div class="field"><label>Parcelas</label><select id="cfgAirbnbInstallments" onchange="atualizarPagamentoPrincipal('airbnb')">${Array.from({length:12},(_,i)=>`<option value="${i+1}">${i+1}x</option>`).join("")}</select></div>
+              <div class="field"><label>Juros</label><select id="cfgAirbnbInterest" onchange="atualizarPagamentoPrincipal('airbnb')"><option value="false">Sem juros</option><option value="true">Com juros</option></select></div>
+              <div class="field"><label>Valor de cada parcela</label><input id="cfgAirbnbInstallmentValue" type="number" step="0.01" readonly></div>
+            </div>
+            <div id="cfgAirbnbPaymentHelp" class="payment-summary"></div>
+          </div>
+        </div>
+
+        <div class="notice" style="margin-top:13px">
+          <strong>Como funciona:</strong> sem juros, o painel divide automaticamente o valor informado. Com juros, você informa o valor real de cada parcela e o painel calcula o total efetivamente pago no cartão.
+        </div>
+        <button class="btn" onclick="salvarConfig()" style="margin-top:13px">Salvar valores</button>
       </div>
 
       <div class="card" style="margin-top:17px">
@@ -446,6 +486,10 @@ const defaultState={
   costs:{
     flights:0, airbnb:0, road:1000, fozHotel:0, localTransport:500,
     food:3000, attractions:400, insurance:250, misc:500
+  },
+  costPayments:{
+    flights:{type:"cash",installments:1,interest:false,installmentValue:0},
+    airbnb:{type:"cash",installments:1,interest:false,installmentValue:0}
   },
   notes:"",
   fx:3.28,
@@ -600,11 +644,13 @@ const defaultState={
 
 let state=JSON.parse(localStorage.getItem(KEY)||"null") || defaultState;
 state.costs=Object.assign({},defaultState.costs,state.costs||{});
+state.costPayments=Object.assign({},defaultState.costPayments,state.costPayments||{});
+["flights","airbnb"].forEach(k=>{state.costPayments[k]=Object.assign({},defaultState.costPayments[k],state.costPayments[k]||{});});
 state.expenses=state.expenses||[];
 state.expenses.forEach(e=>{ if(!e.payment) e.payment={type:"cash",installments:1,interest:false,installmentValue:Number(e.value)||0}; });
 state.checklist=state.checklist||defaultState.checklist;
 state.itinerary=state.itinerary||defaultState.itinerary;
-state.itinerary.forEach(d=>d.items.forEach(it=>{if(it.length<7)it[6]=false;}));
+state.itinerary.forEach(d=>d.items.forEach(it=>{if(it.length<7)it[6]=false;if(!it[7])it[7]=null;}));
 state.places=state.places||defaultState.places;
 state.restaurants=state.restaurants||defaultState.restaurants;
 state.placeFilter=state.placeFilter||"Todos";
@@ -670,8 +716,15 @@ const costLabels=[
   ["insurance","Seguro viagem","estimativa"],
   ["misc","Extras / compras","estimativa"]
 ];
-function budgetTotal(){return Object.values(state.costs).reduce((a,b)=>a+(Number(b)||0),0)}
-function confirmedTotal(){return (Number(state.costs.flights)||0)+(Number(state.costs.airbnb)||0)}
+function costEffective(key){
+  const base=Number(state.costs[key])||0;
+  const p=state.costPayments?.[key];
+  if(!p||p.type!=="card"||!p.interest) return base;
+  const final=(Number(p.installmentValue)||0)*(Number(p.installments)||1);
+  return final||base;
+}
+function budgetTotal(){return Object.keys(state.costs).reduce((a,k)=>a+costEffective(k),0)}
+function confirmedTotal(){return costEffective("flights")+costEffective("airbnb")}
 function renderBudget(){
   const total=budgetTotal(), confirmed=confirmedTotal(), flexible=total-confirmed;
   document.getElementById("budgetTotal").textContent=money(total);
@@ -695,10 +748,21 @@ function renderBudget(){
   if(mf)mf.textContent=state.costs.flights?money(state.costs.flights):"A confirmar";
   if(ma)ma.textContent=state.costs.airbnb?money(state.costs.airbnb):"A confirmar";
   document.getElementById("costBreakdown").innerHTML=costLabels.map(([k,label,type])=>{
-    const v=Number(state.costs[k])||0;
-    const pending=(k==="flights"||k==="airbnb")&&!v;
-    return `<div class="cost-row"><div><div class="cost-name">${label}</div><div class="kpi-label">${pending?"A confirmar":type}</div></div><div class="cost-value">${pending?"—":money(v)}</div></div>`
+    const base=Number(state.costs[k])||0;
+    const v=costEffective(k);
+    const pending=(k==="flights"||k==="airbnb")&&!base;
+    const payment=(k==="flights"||k==="airbnb")&&base?`<div class="cost-payment">${mainCostPaymentLabel(k)}</div>`:"";
+    return `<div class="cost-row"><div><div class="cost-name">${label}</div><div class="kpi-label">${pending?"A confirmar":type}</div>${payment}</div><div class="cost-value">${pending?"—":money(v)}</div></div>`
   }).join("");
+}
+function mainCostPaymentLabel(k){
+  const p=state.costPayments?.[k];
+  const base=Number(state.costs[k])||0;
+  if(!p||p.type==="cash") return "À vista";
+  const n=Number(p.installments)||1;
+  const parc=Number(p.installmentValue)||0;
+  const final=p.interest&&parc?parc*n:base;
+  return `Cartão · ${n}x ${p.interest?"com juros":"sem juros"} · ${money(parc||base/n)}${p.interest?`/parcela · total ${money(final)}`:"/parcela"}`;
 }
 function paymentLabel(e){
   if(!e.payment||e.payment.type==="cash") return "À vista";
@@ -784,7 +848,94 @@ function diaRegiao(d){
   return map[d.date]||"Roteiro personalizado";
 }
 function itemDone(it){return !!it[6]}
-function toggleAtividade(di,ii){state.itinerary[di].items[ii][6]=!state.itinerary[di].items[ii][6];save()}
+function placeImageForItem(title){
+  const t=String(title||"").toLowerCase();
+  const p=state.places.find(x=>{
+    const n=String(x.name||"").toLowerCase();
+    return n && (t.includes(n.split(" + ")[0]) || n.split(" + ").some(part=>part.length>5&&t.includes(part.toLowerCase())));
+  });
+  return p?.img||"";
+}
+function placeEmojiForItem(title,icon){return icon||"📍"}
+function toggleAtividade(di,ii){
+  const it=state.itinerary[di].items[ii];
+  if(itemDone(it)){
+    if(!confirm("Marcar este item como não realizado? O gasto registrado nele também será removido."))return;
+    it[6]=false;it[7]=null;save();return;
+  }
+  abrirRegistroVisita(di,ii);
+}
+function abrirRegistroVisita(di,ii){
+  const it=state.itinerary[di].items[ii];
+  const existing=it[7]||{};
+  const currentARS=Number(existing.ars)||0;
+  const image=placeImageForItem(it[2]);
+  modal("Marcar como realizado",`
+    ${image?`<div class="visit-photo" style="background-image:url('${image}')"></div>`:""}
+    <div class="eyebrow">${state.itinerary[di].label}</div>
+    <h3 style="margin:4px 0 5px">${it[1]} ${it[2]}</h3>
+    <div class="sub">Você foi a este lugar. Registre quanto gastou para que o painel converta o valor para reais.</div>
+    <div class="formgrid" style="margin-top:14px">
+      <div class="field"><label>Quanto gastou? (ARS)</label><input id="visitArs" type="number" min="0" step="1" value="${currentARS||""}" oninput="atualizarConversaoVisita()" placeholder="0 se foi gratuito"></div>
+      <div class="field"><label>Forma de pagamento</label><select id="visitPayment" onchange="atualizarParcelamentoVisita()"><option value="cash">À vista</option><option value="card">Cartão</option></select></div>
+    </div>
+    <div id="visitInstallmentsBox" class="installment-box">
+      <div class="payment-grid">
+        <div class="field"><label>Parcelas</label><select id="visitInstallments" onchange="atualizarParcelamentoVisita()">${Array.from({length:12},(_,i)=>`<option value="${i+1}">${i+1}x</option>`).join("")}</select></div>
+        <div class="field"><label>Juros</label><select id="visitInterest" onchange="atualizarParcelamentoVisita()"><option value="false">Sem juros</option><option value="true">Com juros</option></select></div>
+      </div>
+      <div class="field"><label>Valor de cada parcela (ARS)</label><input id="visitInstallmentValue" type="number" step="0.01" readonly></div>
+      <div id="visitPaymentHelp" class="payment-summary"></div>
+    </div>
+    <div class="visit-box"><div>💱 Câmbio usado: <strong>ARS 1.000 ≈ ${money(state.fx)}</strong></div><div id="visitBrlPreview" style="margin-top:4px">ARS ${currentARS?ars(currentARS):"0"} ≈ <strong>${money(currentARS*state.fx/1000)}</strong></div></div>
+    <button class="btn" onclick="salvarRegistroVisita(${di},${ii})" style="margin-top:12px">✓ Fui e salvar gasto</button>
+  `);
+  atualizarParcelamentoVisita();
+  if(existing.payment){
+    visitPayment.value=existing.payment.type||"cash";
+    visitInstallments.value=existing.payment.installments||1;
+    visitInterest.value=String(!!existing.payment.interest);
+    visitInstallmentValue.value=existing.payment.installmentValue||"";
+    atualizarParcelamentoVisita();
+  }
+}
+function atualizarConversaoVisita(){
+  const a=Number(document.getElementById("visitArs")?.value)||0;
+  const el=document.getElementById("visitBrlPreview");
+  if(el)el.innerHTML=`ARS ${ars(a)} ≈ <strong>${money(a*state.fx/1000)}</strong>`;
+  atualizarParcelamentoVisita();
+}
+function atualizarParcelamentoVisita(){
+  const type=document.getElementById("visitPayment")?.value||"cash";
+  const box=document.getElementById("visitInstallmentsBox");
+  if(!box)return;
+  box.classList.toggle("show",type==="card");
+  if(type!=="card")return;
+  const n=Number(document.getElementById("visitInstallments").value)||1;
+  const total=Number(document.getElementById("visitArs").value)||0;
+  const interest=document.getElementById("visitInterest").value==="true";
+  const out=document.getElementById("visitInstallmentValue");
+  if(!interest){
+    out.value=total?(total/n).toFixed(2):"";out.readOnly=true;
+    document.getElementById("visitPaymentHelp").innerHTML=total?`Sem juros: <strong>${ars(total/n)} ARS</strong> por parcela.`:"Informe o gasto para calcular.";
+  }else{
+    out.readOnly=false;
+    document.getElementById("visitPaymentHelp").textContent="Com juros: informe o valor real de cada parcela em ARS.";
+  }
+}
+function salvarRegistroVisita(di,ii){
+  const it=state.itinerary[di].items[ii];
+  const arsSpent=Number(document.getElementById("visitArs").value);
+  if(!Number.isFinite(arsSpent)||arsSpent<0){alert("Informe um valor em ARS. Use 0 se o passeio foi gratuito.");return}
+  const type=document.getElementById("visitPayment").value;
+  const installments=type==="card"?Number(document.getElementById("visitInstallments").value)||1:1;
+  const interest=type==="card"&&document.getElementById("visitInterest").value==="true";
+  const installmentValue=type==="card"?(interest?Number(document.getElementById("visitInstallmentValue").value)||0:arsSpent/installments):arsSpent;
+  if(type==="card"&&interest&&!installmentValue){alert("Informe o valor de cada parcela quando houver juros.");return}
+  it[6]=true;
+  it[7]={ars:arsSpent,brl:arsSpent*state.fx/1000,fx:state.fx,payment:{type,installments,interest,installmentValue}};
+  fecharModal();save();
+}
 function excluirAtividade(di,ii){if(!confirm("Excluir esta atividade do roteiro?"))return;state.itinerary[di].items.splice(ii,1);save()}
 function editarAtividade(di,ii){
   const it=state.itinerary[di].items[ii];
@@ -805,8 +956,9 @@ function salvarEdicaoAtividade(di,ii){
   const day=state.itinerary.find(x=>x.date===targetDate);
   if(!day||!aTitle.value.trim()){alert("Escolha uma data do roteiro e informe a atividade.");return}
   const oldDone=state.itinerary[di].items[ii][6];
+  const oldVisit=state.itinerary[di].items[ii][7]||null;
   state.itinerary[di].items.splice(ii,1);
-  const newItem=[aTime.value||"—","•",aTitle.value.trim(),aType.value,aDesc.value.trim(),aCost.value.trim()||"A confirmar",oldDone];
+  const newItem=[aTime.value||"—","•",aTitle.value.trim(),aType.value,aDesc.value.trim(),aCost.value.trim()||"A confirmar",oldDone,oldVisit];
   day.items.push(newItem);
   day.items.sort((a,b)=>(a[0]||"99:99").localeCompare(b[0]||"99:99"));
   fecharModal();save();
@@ -816,36 +968,46 @@ function renderItinerary(){
   const totalItems=state.itinerary.reduce((n,d)=>n+d.items.length,0);
   const doneItems=state.itinerary.reduce((n,d)=>n+d.items.filter(itemDone).length,0);
   const daysDone=state.itinerary.filter(d=>d.items.length&&d.items.every(itemDone)).length;
+  const spent=state.itinerary.reduce((n,d)=>n+d.items.reduce((s,it)=>s+(Number(it[7]?.brl)||0),0),0);
   document.getElementById("itineraryOverview").innerHTML=`
     <div class="overview-card"><div class="ov-label">Viagem</div><div class="ov-value">10 dias</div><div class="ov-sub">08 → 17 de fevereiro · 2 viajantes</div></div>
-    <div class="overview-card"><div class="ov-label">Atividades</div><div class="ov-value">${doneItems}/${totalItems}</div><div class="ov-sub">${totalItems?Math.round(doneItems/totalItems*100):0}% concluídas</div></div>
+    <div class="overview-card"><div class="ov-label">Atividades</div><div class="ov-value">${doneItems}/${totalItems}</div><div class="ov-sub">${totalItems?Math.round(doneItems/totalItems*100):0}% realizadas</div></div>
     <div class="overview-card"><div class="ov-label">Dias fechados</div><div class="ov-value">${daysDone}/10</div><div class="ov-sub">todos os itens marcados</div></div>
-    <div class="overview-card"><div class="ov-label">Próximo foco</div><div class="ov-value">${state.itinerary.find(d=>d.items.some(x=>!itemDone(x)))?.label||"Tudo pronto"}</div><div class="ov-sub">primeiro dia com pendências</div></div>`;
+    <div class="overview-card"><div class="ov-label">Gasto registrado</div><div class="ov-value">${money(spent)}</div><div class="ov-sub">passeios e atividades marcados</div></div>`;
 
   box.innerHTML=state.itinerary.map((d,di)=>{
     const done=d.items.filter(itemDone).length;
+    const daySpent=d.items.reduce((n,it)=>n+(Number(it[7]?.brl)||0),0);
     return `<div class="card day-card" style="margin-bottom:16px">
       <div class="day-head">
         <div><div class="day-number">${d.label}</div><h2 style="margin:4px 0 0">${d.title}</h2><div class="day-region">📍 ${diaRegiao(d)}</div></div>
-        <div style="text-align:right"><span class="badge">${done}/${d.items.length} concluídas</span><div class="kpi-label" style="margin-top:6px">${d.items.length} paradas</div></div>
+        <div style="text-align:right"><span class="badge">${done}/${d.items.length} realizadas</span><div class="kpi-label" style="margin-top:6px">${daySpent?`Gasto: ${money(daySpent)}`:`${d.items.length} paradas`}</div></div>
       </div>
-      <div class="timeline">${d.items.map((it,ii)=>`
-        <div class="timeline-row">
+      <div class="timeline">${d.items.map((it,ii)=>{
+        const img=placeImageForItem(it[2]);
+        const visit=it[7];
+        return `<div class="timeline-row">
           <div class="timeline-time">${it[0]}</div>
           <div class="timeline-content ${itemDone(it)?"is-done":""}">
-            <div class="row"><div class="timeline-title">${it[1]} ${it[2]}</div><span class="badge">${it[3]}</span></div>
-            <div class="timeline-meta">${it[4]||"Sem observação"}</div>
-            <div class="timeline-price">${it[5]||"A confirmar"}</div>
-            <div class="timeline-actions">
-              <input class="timeline-check" type="checkbox" ${itemDone(it)?"checked":""} onchange="toggleAtividade(${di},${ii})" title="Marcar como concluída">
-              <span class="kpi-label">${itemDone(it)?"Concluída":"Pendente"}</span>
+            <div class="itinerary-item-card">
+              <div class="itinerary-thumb">${img?`<img src="${img}" alt="Foto de ${String(it[2]).replace(/"/g,'&quot;')}" loading="lazy">`:placeEmojiForItem(it[2],it[1])}</div>
+              <div>
+                <div class="row"><div class="timeline-title">${it[1]} ${it[2]}</div><span class="badge">${it[3]}</span></div>
+                <div class="timeline-meta">${it[4]||"Sem observação"}</div>
+                <div class="timeline-price">${it[5]||"A confirmar"}</div>
+                ${visit?`<div class="visit-box"><div><strong>✓ Realizado</strong> · ${ars(visit.ars)} ARS ≈ <strong>${money(visit.brl)}</strong></div><div style="margin-top:3px">${paymentLabel({payment:visit.payment})} · câmbio registrado: ${money(visit.fx)}/ARS 1.000</div></div>`:""}
+              </div>
+            </div>
+            <div class="visit-actions">
+              <input class="visit-check" type="checkbox" ${itemDone(it)?"checked":""} onchange="toggleAtividade(${di},${ii})" title="Marcar se você foi">
+              <span class="kpi-label">${itemDone(it)?"Fui · gasto registrado":"Não fui / pendente"}</span>
               <span style="flex:1"></span>
               <button class="btn ghost small" onclick="editarAtividade(${di},${ii})">Editar</button>
               <button class="btn danger small" onclick="excluirAtividade(${di},${ii})">Excluir</button>
             </div>
           </div>
-        </div>`).join("")}
-      </div>
+        </div>`;
+      }).join("")}</div>
     </div>`;
   }).join("");
 
@@ -946,6 +1108,34 @@ function carregarConfig(){
   cfgInsurance.value=state.costs.insurance||"";
   cfgMisc.value=state.costs.misc||"";
   cfgNotes.value=state.notes||"";
+  ["flights","airbnb"].forEach(k=>{
+    const p=state.costPayments[k]||{};
+    document.getElementById(`cfg${k==="flights"?"Flights":"Airbnb"}Payment`).value=p.type||"cash";
+    document.getElementById(`cfg${k==="flights"?"Flights":"Airbnb"}Installments`).value=Number(p.installments)||1;
+    document.getElementById(`cfg${k==="flights"?"Flights":"Airbnb"}Interest`).value=String(!!p.interest);
+    document.getElementById(`cfg${k==="flights"?"Flights":"Airbnb"}InstallmentValue`).value=p.installmentValue||"";
+    atualizarPagamentoPrincipal(k);
+  });
+}
+function atualizarPagamentoPrincipal(kind){
+  const cap=kind==="flights"?"Flights":"Airbnb";
+  const type=document.getElementById(`cfg${cap}Payment`)?.value||"cash";
+  const n=Number(document.getElementById(`cfg${cap}Installments`)?.value)||1;
+  const base=Number(document.getElementById(kind==="flights"?"cfgFlights":"cfgAirbnb")?.value)||0;
+  const interest=document.getElementById(`cfg${cap}Interest`)?.value==="true";
+  const out=document.getElementById(`cfg${cap}InstallmentValue`);
+  const help=document.getElementById(`cfg${cap}PaymentHelp`);
+  const card=type==="card";
+  document.getElementById(`cfg${cap}Installments`).disabled=!card;
+  document.getElementById(`cfg${cap}Interest`).disabled=!card;
+  out.readOnly=!card||!interest;
+  if(!card){out.value="";help.innerHTML="Pagamento à vista. O valor informado é o valor efetivamente pago.";return}
+  if(!interest){
+    out.value=base&&n?(base/n).toFixed(2):"";
+    help.innerHTML=base?`Sem juros: <strong>${n}x de ${money(base/n)}</strong> · total ${money(base)}.`:"Informe o valor da compra para calcular as parcelas.";
+  }else{
+    help.innerHTML="Com juros: informe o valor real de cada parcela. O total final será parcela × número de parcelas.";
+  }
 }
 function salvarConfig(){
   state.costs.flights=Number(cfgFlights.value)||0;
@@ -957,7 +1147,17 @@ function salvarConfig(){
   state.costs.attractions=Number(cfgAttractions.value)||0;
   state.costs.insurance=Number(cfgInsurance.value)||0;
   state.costs.misc=Number(cfgMisc.value)||0;
-  save();alert("Valores salvos.")
+  ["flights","airbnb"].forEach(k=>{
+    const cap=k==="flights"?"Flights":"Airbnb";
+    const type=document.getElementById(`cfg${cap}Payment`).value;
+    const installments=Number(document.getElementById(`cfg${cap}Installments`).value)||1;
+    const interest=document.getElementById(`cfg${cap}Interest`).value==="true";
+    const base=Number(document.getElementById(k==="flights"?"cfgFlights":"cfgAirbnb").value)||0;
+    let installmentValue=0;
+    if(type==="card") installmentValue=interest?Number(document.getElementById(`cfg${cap}InstallmentValue`).value)||0:(base/installments);
+    state.costPayments[k]={type,installments,interest,installmentValue};
+  });
+  save();alert("Valores e formas de pagamento salvos.")
 }
 function salvarNotas(){state.notes=cfgNotes.value;save();alert("Observações salvas.")}
 
