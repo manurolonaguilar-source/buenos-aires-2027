@@ -44,3 +44,12 @@ jobs:
             git commit -m "Atualizar preços da viagem"
             git push
           fi
+      - name: Guardar screenshots de diagnóstico
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnostico-precos
+          path: |
+            debug-passagem.png
+            debug-airbnb.png
+          if-no-files-found: ignore
