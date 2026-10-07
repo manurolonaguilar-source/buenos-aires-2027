@@ -99,7 +99,18 @@ h2{font-size:22px;margin:0 0 15px} h3{font-size:17px;margin:0 0 7px}
 .visit-box strong{font-size:12px}
 .visit-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:10px}
 .visit-check{width:19px;height:19px;accent-color:var(--green)}
-.main-payment{margin-top:8px;padding:12px;border:1px solid var(--line);border-radius:13px;background:#faf8f6}
+.main-payment{margin-top:8px;padding:16px;border:1px solid var(--line);border-radius:15px;background:#faf8f6}
+.payment-section-card{padding:18px;border:1px solid var(--line);border-radius:16px;background:#fff;box-shadow:var(--shadow)}
+.payment-hero{padding:18px;border-radius:16px;background:linear-gradient(135deg,#f4e8dd,#fbf8f5);border:1px solid var(--line);margin-bottom:17px}
+.payment-summary-big{font-size:24px;font-weight:900;margin-top:6px}
+.payment-result{margin-top:10px;padding:11px 12px;border-radius:11px;background:#f1e8e0;font-size:12px;line-height:1.5}
+.payment-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.installment-box{display:none;margin-top:10px;padding:12px;border:1px dashed var(--line);border-radius:12px;background:#fcfaf8}
+.installment-box.show{display:block}
+.payment-note{font-size:11px;color:var(--muted);line-height:1.45}
+@media(max-width:900px){.payment-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:620px){.payment-grid{grid-template-columns:1fr}}
+
 .main-payment-title{font-size:11px;font-weight:850;margin-bottom:8px}
 .cost-payment{margin-top:5px;font-size:10px;color:var(--muted)}
 .cost-payment strong{color:var(--ink)}
@@ -214,7 +225,8 @@ table{width:100%;border-collapse:collapse}th,td{padding:11px;border-bottom:1px s
       <button onclick="show('roteiro',this)">◷ <span>Roteiro</span></button>
       <button onclick="show('passeios',this)">⌖ <span>Passeios</span></button>
       <button onclick="show('restaurantes',this)">♨ <span>Restaurantes</span></button>
-      <button onclick="show('orcamento',this)">$ <span>Orçamento</span></button>
+      <button onclick="show('orcamento',this)">$ <span>Gastos</span></button>
+      <button onclick="show('pagamentos',this)">▣ <span>Pagamentos</span></button>
       <button onclick="show('checklist',this)">✓ <span>Checklist</span></button>
       <button onclick="show('config',this)">⚙ <span>Configurações</span></button>
     </nav>
@@ -275,6 +287,7 @@ table{width:100%;border-collapse:collapse}th,td{padding:11px;border-bottom:1px s
     <div><div class="eyebrow">Planejamento diário</div><h1>Roteiro completo</h1><div class="sub">Um dia por vez, com horários, região, deslocamentos, custos e pequenas ações. Marque o que já foi feito.</div></div>
     <button class="btn" onclick="adicionarAtividade()">+ Adicionar atividade</button>
   </div>
+  <div class="notice" style="margin:0 0 15px"><strong>Como usar:</strong> deixe desmarcado se não foi. Quando você marcar <strong>Fui</strong>, o painel abre o registro do gasto em <strong>ARS</strong>, converte para reais e permite escolher à vista ou cartão, de 1x a 12x, com ou sem juros.</div>
   <div class="itinerary-overview" id="itineraryOverview"></div>
   <div id="itinerary"></div>
 </section>
@@ -356,7 +369,66 @@ table{width:100%;border-collapse:collapse}th,td{padding:11px;border-bottom:1px s
       </div>
     </section>
 
-    <section id="checklist" class="section">
+    <section id="pagamentos" class="section">
+  <div class="section-head">
+    <div><div class="eyebrow">Reservas & parcelamento</div><h1>Pagamentos</h1><div class="sub">Controle passagem e Airbnb separadamente, com à vista, cartão, 1x a 12x e juros. Os passeios continuam sendo registrados diretamente no roteiro.</div></div>
+  </div>
+
+  <div class="payment-hero">
+    <div class="eyebrow">Como vamos controlar</div>
+    <div class="payment-summary-big">Valor da compra ≠ valor da parcela</div>
+    <div class="payment-note" style="margin-top:6px">Sem juros, o painel divide automaticamente o total. Com juros, você informa o valor real de cada parcela e o painel calcula o total que realmente sairá do cartão.</div>
+  </div>
+
+  <div class="two">
+    <div class="payment-section-card">
+      <div class="row"><div><div class="eyebrow">Reserva principal</div><h2 style="margin:3px 0">✈️ Passagens</h2><div class="sub">2 pessoas · Foz do Iguaçu ↔ Buenos Aires</div></div><span class="badge">Cartão ou à vista</span></div>
+      <div class="formgrid" style="margin-top:15px">
+        <div class="field"><label>Valor total da compra (R$)</label><input id="payFlightsValue" type="number" min="0" step="0.01" oninput="atualizarPagamentoAba('flights')"></div>
+        <div class="field"><label>Forma de pagamento</label><select id="payFlightsType" onchange="atualizarPagamentoAba('flights')"><option value="cash">À vista</option><option value="card">Cartão</option></select></div>
+      </div>
+      <div id="payFlightsCard" class="installment-box">
+        <div class="payment-grid">
+          <div class="field"><label>Parcelas</label><select id="payFlightsInstallments" onchange="atualizarPagamentoAba('flights')">${Array.from({length:12},(_,i)=>`<option value="${i+1}">${i+1}x</option>`).join("")}</select></div>
+          <div class="field"><label>Juros</label><select id="payFlightsInterest" onchange="atualizarPagamentoAba('flights')"><option value="false">Sem juros</option><option value="true">Com juros</option></select></div>
+          <div class="field"><label>Valor de cada parcela (R$)</label><input id="payFlightsInstallment" type="number" min="0" step="0.01" oninput="atualizarPagamentoAba('flights')"></div>
+          <div class="field"><label>Total efetivamente pago (R$)</label><input id="payFlightsFinal" readonly></div>
+        </div>
+        <div id="payFlightsHelp" class="payment-result"></div>
+      </div>
+      <div id="payFlightsResult" class="payment-result"></div>
+      <button class="btn" onclick="salvarPagamentoAba('flights')" style="margin-top:12px">Salvar pagamento da passagem</button>
+      <div class="payment-note" style="margin-top:9px">Você também pode abrir a pesquisa original pelo link na aba Gastos & orçamento.</div>
+    </div>
+
+    <div class="payment-section-card">
+      <div class="row"><div><div class="eyebrow">Hospedagem</div><h2 style="margin:3px 0">🏠 Airbnb</h2><div class="sub">08/02/2027 → 17/02/2027 · 2 pessoas</div></div><span class="badge">Reserva principal</span></div>
+      <div class="formgrid" style="margin-top:15px">
+        <div class="field"><label>Valor total da reserva (R$)</label><input id="payAirbnbValue" type="number" min="0" step="0.01" oninput="atualizarPagamentoAba('airbnb')"></div>
+        <div class="field"><label>Forma de pagamento</label><select id="payAirbnbType" onchange="atualizarPagamentoAba('airbnb')"><option value="cash">À vista</option><option value="card">Cartão</option></select></div>
+      </div>
+      <div id="payAirbnbCard" class="installment-box">
+        <div class="payment-grid">
+          <div class="field"><label>Parcelas</label><select id="payAirbnbInstallments" onchange="atualizarPagamentoAba('airbnb')">${Array.from({length:12},(_,i)=>`<option value="${i+1}">${i+1}x</option>`).join("")}</select></div>
+          <div class="field"><label>Juros</label><select id="payAirbnbInterest" onchange="atualizarPagamentoAba('airbnb')"><option value="false">Sem juros</option><option value="true">Com juros</option></select></div>
+          <div class="field"><label>Valor de cada parcela (R$)</label><input id="payAirbnbInstallment" type="number" min="0" step="0.01" oninput="atualizarPagamentoAba('airbnb')"></div>
+          <div class="field"><label>Total efetivamente pago (R$)</label><input id="payAirbnbFinal" readonly></div>
+        </div>
+        <div id="payAirbnbHelp" class="payment-result"></div>
+      </div>
+      <div id="payAirbnbResult" class="payment-result"></div>
+      <button class="btn" onclick="salvarPagamentoAba('airbnb')" style="margin-top:12px">Salvar pagamento do Airbnb</button>
+      <div class="payment-note" style="margin-top:9px">Com juros, o valor da parcela é digitado por você para refletir a cobrança real.</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:17px">
+    <div class="row"><div><h2>Resumo dos pagamentos</h2><div class="sub">O que já está definido para o cartão ou pagamento à vista.</div></div><button class="btn alt small" onclick="show('orcamento')">Ver gastos</button></div>
+    <div id="paymentsOverview" class="cost-list" style="margin-top:10px"></div>
+  </div>
+</section>
+
+<section id="checklist" class="section">
       <div class="section-head">
         <div><div class="eyebrow">Preparação</div><h1>Checklist</h1><div class="sub">Tudo que precisa estar resolvido antes de embarcar.</div></div>
         <button class="btn" onclick="adicionarChecklist()">+ Item</button>
@@ -1084,6 +1156,81 @@ function salvarRestaurante(){
   fecharModal();save()
 }
 
+function atualizarPagamentoAba(kind){
+  const cap=kind==='flights'?'Flights':'Airbnb';
+  const value=Number(document.getElementById(`pay${cap}Value`)?.value)||0;
+  const type=document.getElementById(`pay${cap}Type`)?.value||'cash';
+  const cardBox=document.getElementById(`pay${cap}Card`);
+  const result=document.getElementById(`pay${cap}Result`);
+  const installments=Number(document.getElementById(`pay${cap}Installments`)?.value)||1;
+  const interest=document.getElementById(`pay${cap}Interest`)?.value==='true';
+  const installment=document.getElementById(`pay${cap}Installment`)?.value;
+  const finalInput=document.getElementById(`pay${cap}Final`);
+  const help=document.getElementById(`pay${cap}Help`);
+  if(cardBox)cardBox.classList.toggle('show',type==='card');
+  if(type!=='card'){
+    if(finalInput)finalInput.value=value?value.toFixed(2):'';
+    if(result)result.innerHTML=value?`<strong>À vista:</strong> ${money(value)} pagos de uma vez.`:'Informe o valor da compra.';
+    return;
+  }
+  let parc=0,total=value;
+  if(!interest){
+    parc=value/installments;
+    const input=document.getElementById(`pay${cap}Installment`);
+    if(input){input.value=value?(parc.toFixed(2)):'';input.readOnly=true;}
+    total=value;
+    if(help)help.innerHTML=value?`Sem juros: <strong>${installments}x de ${money(parc)}</strong>. Total: <strong>${money(total)}</strong>.`:'Informe o valor da compra para calcular.';
+  }else{
+    const input=document.getElementById(`pay${cap}Installment`);
+    if(input)input.readOnly=false;
+    parc=Number(installment)||0;
+    total=parc*installments;
+    if(help)help.innerHTML='Com juros: digite o valor real de cada parcela. O total será parcela × número de parcelas.';
+  }
+  if(finalInput)finalInput.value=total?total.toFixed(2):'';
+  if(result)result.innerHTML=parc?`<strong>Cartão:</strong> ${installments}x de ${money(parc)} · ${interest?'com juros':'sem juros'} · total efetivo ${money(total)}.`:'Informe o valor da compra e a parcela.';
+}
+function salvarPagamentoAba(kind){
+  const cap=kind==='flights'?'Flights':'Airbnb';
+  const value=Number(document.getElementById(`pay${cap}Value`).value)||0;
+  const type=document.getElementById(`pay${cap}Type`).value;
+  if(value<=0){alert('Informe o valor total da compra.');return}
+  const installments=type==='card'?Number(document.getElementById(`pay${cap}Installments`).value)||1:1;
+  const interest=type==='card'&&document.getElementById(`pay${cap}Interest`).value==='true';
+  let installmentValue=type==='card'?(interest?Number(document.getElementById(`pay${cap}Installment`).value)||0:value/installments):value;
+  if(type==='card'&&interest&&installmentValue<=0){alert('Informe o valor de cada parcela quando houver juros.');return}
+  state.costs[kind]=value;
+  state.costPayments[kind]={type,installments,interest,installmentValue};
+  save();
+  renderPayments();
+  alert(`${kind==='flights'?'Passagem':'Airbnb'} salvo com sucesso.`);
+}
+function renderPayments(){
+  ['flights','airbnb'].forEach(kind=>{
+    const cap=kind==='flights'?'Flights':'Airbnb';
+    const value=Number(state.costs[kind])||0;
+    const p=state.costPayments?.[kind]||{type:'cash',installments:1,interest:false,installmentValue:0};
+    const valueInput=document.getElementById(`pay${cap}Value`);
+    const typeInput=document.getElementById(`pay${cap}Type`);
+    if(!valueInput||!typeInput)return;
+    valueInput.value=value||''; typeInput.value=p.type||'cash';
+    if(document.getElementById(`pay${cap}Installments`))document.getElementById(`pay${cap}Installments`).value=Number(p.installments)||1;
+    if(document.getElementById(`pay${cap}Interest`))document.getElementById(`pay${cap}Interest`).value=String(!!p.interest);
+    const iv=document.getElementById(`pay${cap}Installment`);
+    if(iv)iv.value=p.installmentValue||'';
+    atualizarPagamentoAba(kind);
+  });
+  const box=document.getElementById('paymentsOverview');
+  if(!box)return;
+  box.innerHTML=['flights','airbnb'].map(kind=>{
+    const label=kind==='flights'?'✈️ Passagens':'🏠 Airbnb';
+    const base=Number(state.costs[kind])||0;
+    const p=state.costPayments?.[kind]||{};
+    const desc=base?(p.type==='card'?`${p.installments||1}x ${p.interest?'com juros':'sem juros'} · ${money(p.installmentValue||base/(p.installments||1))}/parcela · total ${money(costEffective(kind))}`:`À vista · ${money(base)}`):'Ainda não preenchido';
+    return `<div class="cost-row"><div><div class="cost-name">${label}</div><div class="kpi-label">${desc}</div></div><div class="cost-value">${base?money(costEffective(kind)):'—'}</div></div>`;
+  }).join('');
+}
+
 /* Checklist */
 function renderChecklist(){
   const done=state.checklist.filter(x=>x.done).length, pct=state.checklist.length?done/state.checklist.length*100:0;
@@ -1163,7 +1310,7 @@ function salvarNotas(){state.notes=cfgNotes.value;save();alert("Observações sa
 
 /* Render */
 function render(){
-  renderBudget();renderExpenses();renderItinerary();renderPlaces();renderRestaurants();renderChecklist();carregarConfig();
+  renderBudget();renderExpenses();renderItinerary();renderPlaces();renderRestaurants();renderChecklist();carregarConfig();renderPayments();
   converter();
 }
 verificarLogin();
