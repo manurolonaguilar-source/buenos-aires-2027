@@ -108,6 +108,7 @@ h2{font-size:22px;margin:0 0 15px} h3{font-size:17px;margin:0 0 7px}
 .installment-box{display:none;margin-top:10px;padding:12px;border:1px dashed var(--line);border-radius:12px;background:#fcfaf8}
 .installment-box.show{display:block}
 .payment-note{font-size:11px;color:var(--muted);line-height:1.45}
+.restaurant-links{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 @media(max-width:900px){.payment-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:620px){.payment-grid{grid-template-columns:1fr}}
 
@@ -389,7 +390,9 @@ table{width:100%;border-collapse:collapse}th,td{padding:11px;border-bottom:1px s
       </div>
       <div id="payFlightsCard" class="installment-box">
         <div class="payment-grid">
-          <div class="field"><label>Parcelas</label><select id="payFlightsInstallments" onchange="atualizarPagamentoAba('flights')">${Array.from({length:12},(_,i)=>`<option value="${i+1}">${i+1}x</option>`).join("")}</select></div>
+          <div class="field"><label>Parcelas</label><select id="payFlightsInstallments" onchange="atualizarPagamentoAba('flights')">
+<option value="1">1x</option><option value="2">2x</option><option value="3">3x</option><option value="4">4x</option><option value="5">5x</option><option value="6">6x</option><option value="7">7x</option><option value="8">8x</option><option value="9">9x</option><option value="10">10x</option><option value="11">11x</option><option value="12">12x</option>
+</select></div>
           <div class="field"><label>Juros</label><select id="payFlightsInterest" onchange="atualizarPagamentoAba('flights')"><option value="false">Sem juros</option><option value="true">Com juros</option></select></div>
           <div class="field"><label>Valor de cada parcela (R$)</label><input id="payFlightsInstallment" type="number" min="0" step="0.01" oninput="atualizarPagamentoAba('flights')"></div>
           <div class="field"><label>Total efetivamente pago (R$)</label><input id="payFlightsFinal" readonly></div>
@@ -409,7 +412,9 @@ table{width:100%;border-collapse:collapse}th,td{padding:11px;border-bottom:1px s
       </div>
       <div id="payAirbnbCard" class="installment-box">
         <div class="payment-grid">
-          <div class="field"><label>Parcelas</label><select id="payAirbnbInstallments" onchange="atualizarPagamentoAba('airbnb')">${Array.from({length:12},(_,i)=>`<option value="${i+1}">${i+1}x</option>`).join("")}</select></div>
+          <div class="field"><label>Parcelas</label><select id="payAirbnbInstallments" onchange="atualizarPagamentoAba('airbnb')">
+<option value="1">1x</option><option value="2">2x</option><option value="3">3x</option><option value="4">4x</option><option value="5">5x</option><option value="6">6x</option><option value="7">7x</option><option value="8">8x</option><option value="9">9x</option><option value="10">10x</option><option value="11">11x</option><option value="12">12x</option>
+</select></div>
           <div class="field"><label>Juros</label><select id="payAirbnbInterest" onchange="atualizarPagamentoAba('airbnb')"><option value="false">Sem juros</option><option value="true">Com juros</option></select></div>
           <div class="field"><label>Valor de cada parcela (R$)</label><input id="payAirbnbInstallment" type="number" min="0" step="0.01" oninput="atualizarPagamentoAba('airbnb')"></div>
           <div class="field"><label>Total efetivamente pago (R$)</label><input id="payAirbnbFinal" readonly></div>
@@ -708,9 +713,22 @@ const defaultState={
     {name:"Café Tortoni",area:"Centro",hours:"Consultar horário do dia",priceBRL:0,priceText:"Consumo no local",desc:"Café histórico que pode entrar como pausa no circuito do Centro. Aqui o passeio é mais pela experiência do que por uma atração paga.",img:"https://commons.wikimedia.org/wiki/Special:Redirect/file/Cafe%20Tortoni%20BA.jpg",source:"Wikimedia Commons",fit:"Café + história",duration:"45–90min"}
   ],
   restaurants:[
-    {name:"Café Tortoni",area:"Centro",price:120,desc:"Café histórico para encaixar no circuito do Centro. Orçamento é referência por pessoa.",link:"https://www.cafetortoni.com.ar/"},
-    {name:"Havanna · El Ateneo",area:"Recoleta",price:55,desc:"Opção simples para café/lanche durante a visita ao El Ateneo.",link:""},
-    {name:"Parrilla de bairro",area:"Recoleta / Palermo",price:100,desc:"Faixa de planejamento para uma refeição casual por pessoa, antes de escolher o restaurante específico.",link:""},
+    {name:"Don Julio",area:"Palermo",priceARS:100000,desc:"Parrilla argentina clássica e uma das escolhas mais disputadas. Ideal para uma noite especial.",instagram:"https://www.instagram.com/donjulioparrilla/",link:"https://parrilladonjulio.com.ar/"},
+    {name:"La Cabrera",area:"Palermo",priceARS:50000,desc:"Parrilla tradicional, porções generosas e clima descontraído. Boa opção para comparar com Don Julio.",instagram:"https://www.instagram.com/lacabrera_bsas/",link:"https://lacabrera.com.ar/"},
+    {name:"El Preferido de Palermo",area:"Palermo",priceARS:50000,desc:"Bodegón porteño com releituras de clássicos argentinos e ambiente bem característico.",instagram:"https://www.instagram.com/elpreferidodepalermo/",link:"https://elpreferido.meitre.com/"},
+    {name:"Mishiguene",area:"Palermo",priceARS:100000,desc:"Cozinha de tradição judaica com proposta mais sofisticada. Para colocar na lista de jantar especial.",instagram:"https://www.instagram.com/mishigueneba/",link:"https://mishiguenerestaurant.com/"},
+    {name:"Gran Dabbang",area:"Palermo",priceARS:55000,desc:"Cozinha criativa com influência asiática e indiana, em formato mais informal e disputado.",instagram:"https://www.instagram.com/dabbang_/",link:"https://grandabbang.com/"},
+    {name:"La Carnicería",area:"Palermo",priceARS:50000,desc:"Parrilla contemporânea, ótima para provar cortes e preparos diferentes do churrasco argentino.",instagram:"https://www.instagram.com/xlacarniceriax/",link:""},
+    {name:"La Brigada",area:"San Telmo",priceARS:55000,desc:"Parrilla tradicional em San Telmo, perfeita para combinar com um dia pelo bairro histórico.",instagram:"https://www.instagram.com/labrigadaparrilla/",link:""},
+    {name:"Corte Comedor",area:"Belgrano",priceARS:75000,desc:"Parrilla contemporânea com foco em carnes, vinhos e ambiente mais elegante.",instagram:"https://www.instagram.com/cortecomedor/",link:""},
+    {name:"Narda Comedor",area:"Belgrano",priceARS:50000,desc:"Restaurante da chef Narda Lepes, com foco em vegetais, produtos sazonais e cozinha argentina contemporânea.",instagram:"https://www.instagram.com/nardacomedor/",link:"https://nardacomedor.com/"},
+    {name:"Osaka",area:"Puerto Madero",priceARS:100000,desc:"Cozinha nikkei peruano-japonesa em uma opção mais sofisticada para jantar.",instagram:"https://www.instagram.com/osakabsas/",link:""},
+    {name:"La Bistecca",area:"Puerto Madero",priceARS:50000,desc:"Opção estilo buffet com carnes, massas, saladas e sobremesas, boa para controlar melhor o custo por pessoa.",instagram:"https://www.instagram.com/labisteccapastagrill/",link:""},
+    {name:"Siga La Vaca",area:"Puerto Madero",priceARS:60900,desc:"Parrilla livre com bebida e sobremesa incluídas em determinados menus. Uma alternativa prática para comer bastante sem ficar calculando prato por prato.",instagram:"https://www.instagram.com/sigalavaca/",link:"https://sigalavaca.com/"},
+    {name:"Café Tortoni",area:"Centro",priceARS:15000,desc:"Café histórico para encaixar no circuito do Centro, ótimo para lanche, café e sobremesa.",instagram:"https://www.instagram.com/cafetortoni/",link:"https://www.cafetortoni.com.ar/"},
+    {name:"Crizia",area:"Palermo",priceARS:100000,desc:"Alta gastronomia com foco em frutos do mar, ostras, vinhos e produtos argentinos.",instagram:"https://www.instagram.com/crizia_restaurant/",link:"https://crizia.com.ar/"},
+    {name:"Cucina Paradiso",area:"Palermo / Recoleta",priceARS:50000,desc:"Cozinha italiana do chef Donato De Santis, com massas, pizzas e sobremesas. Boa opção para variar da carne.",instagram:"https://www.instagram.com/cucinaparadisoba/",link:"https://www.cucinaparadiso.com/"},
+    {name:"El Ferroviario",area:"Liniers",priceARS:45000,desc:"Parrilla conhecida por porções grandes e proposta mais tradicional. Vale considerar se estiverem dispostos a sair do circuito turístico.",instagram:"https://www.instagram.com/elferroviariook/",link:"https://elferroviarioparrilla.com/"}
   ]
 };
 
@@ -728,6 +746,7 @@ state.restaurants=state.restaurants||defaultState.restaurants;
 state.placeFilter=state.placeFilter||"Todos";
 // Adiciona novas sugestões ao painel sem apagar o que você já tiver editado.
 defaultState.places.forEach(p=>{if(!state.places.some(x=>x.name===p.name))state.places.push(p)});
+defaultState.restaurants.forEach(r=>{if(!state.restaurants.some(x=>x.name===r.name))state.restaurants.push(r)});
 
 function save(){localStorage.setItem(KEY,JSON.stringify(state));render()}
 function money(v){return new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(Number(v)||0)}
@@ -1130,21 +1149,28 @@ function setPlaceFilter(f){state.placeFilter=f;localStorage.setItem(KEY,JSON.str
 
 /* Restaurantes */
 function renderRestaurants(){
-  document.getElementById("restaurants").innerHTML=state.restaurants.map(r=>`
-    <div class="card">
-      <div class="eyebrow">${r.area}</div><h3>${r.name}</h3>
-      <p class="sub">${r.desc}</p>
-      <div class="place-info"><span class="badge cost">≈ R$ ${Number(r.price||0).toFixed(0)} / pessoa</span></div>
-      ${r.link?`<a class="btn alt small" href="${r.link}" target="_blank" rel="noopener">Site</a>`:""}
-    </div>`).join("");
+  document.getElementById("restaurants").innerHTML=state.restaurants.map(r=>{
+    const arsPrice=Number(r.priceARS)||0;
+    const brlPrice=arsPrice&&state.fx?arsPrice*state.fx/1000:Number(r.price)||0;
+    return `<div class="card restaurant-card">
+      <div class="eyebrow">${r.area||"Buenos Aires"}</div><h3>${r.name}</h3>
+      <p class="sub">${r.desc||""}</p>
+      <div class="place-info"><span class="badge cost">≈ ARS ${ars(arsPrice)} / pessoa</span><span class="badge">≈ ${money(brlPrice)} / pessoa</span></div>
+      <div class="restaurant-links">
+        ${r.instagram?`<a class="btn alt small" href="${r.instagram}" target="_blank" rel="noopener">Instagram ↗</a>`:""}
+        ${r.link?`<a class="btn alt small" href="${r.link}" target="_blank" rel="noopener">Site ↗</a>`:""}
+      </div>
+    </div>`;
+  }).join("");
 }
 function adicionarRestaurante(){
   modal("Adicionar restaurante",`
     <div class="formgrid">
       <div class="field"><label>Nome</label><input id="rName"></div>
       <div class="field"><label>Bairro</label><input id="rArea"></div>
-      <div class="field"><label>Preço médio por pessoa (R$)</label><input id="rPrice" type="number"></div>
-      <div class="field"><label>Site / Instagram</label><input id="rLink"></div>
+      <div class="field"><label>Preço médio por pessoa (ARS)</label><input id="rPrice" type="number"></div>
+      <div class="field"><label>Instagram</label><input id="rInstagram" placeholder="https://www.instagram.com/.../"></div>
+      <div class="field"><label>Site</label><input id="rLink" placeholder="https://..."></div></div>
     </div>
     <div class="field"><label>Descrição</label><textarea id="rDesc" rows="4"></textarea></div>
     <button class="btn" onclick="salvarRestaurante()">Salvar restaurante</button>
@@ -1152,7 +1178,7 @@ function adicionarRestaurante(){
 }
 function salvarRestaurante(){
   if(!rName.value.trim())return;
-  state.restaurants.push({name:rName.value.trim(),area:rArea.value,price:Number(rPrice.value)||0,desc:rDesc.value,link:rLink.value});
+  state.restaurants.push({name:rName.value.trim(),area:rArea.value,priceARS:Number(rPrice.value)||0,desc:rDesc.value,instagram:rInstagram.value,link:rLink.value});
   fecharModal();save()
 }
 
