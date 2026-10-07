@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Buenos Aires 2027 • Planejamento</title>
+<style>
+:root{
+  --bg:#f5f2ee;--card:#fff;--ink:#252321;--muted:#77716b;--line:#e8e0d8;
+  --accent:#b98662;--accent-soft:#ead9ca;--dark:#252321;--green:#55705c;
+  --red:#9b514b;--blue:#56708a;--shadow:0 8px 30px rgba(34,29,25,.06);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+a{color:inherit}
+.app{min-height:100vh}
+.sidebar{
+  position:fixed;inset:0 auto 0 0;width:250px;background:var(--dark);color:#fff;padding:28px 18px;
+  display:flex;flex-direction:column;z-index:30
+}
+.logo{font-size:22px;font-weight:850;line-height:1.15;padding:0 12px 30px}
+.logo span{display:block;color:#d8b394;margin-top:3px}
+.nav button{
+  display:flex;align-items:center;gap:10px;width:100%;border:0;background:transparent;color:#cfc8c2;
+  padding:13px 14px;border-radius:11px;margin:3px 0;text-align:left
+}
+.nav button.active,.nav button:hover{background:#3b3936;color:#fff}
+.sidebar-foot{margin-top:auto;padding:12px;color:#8f8984;font-size:11px;line-height:1.5}
+.main{margin-left:250px;max-width:1550px;padding:28px 34px 60px}
+.topbar{
+  position:sticky;top:0;z-index:20;margin:-28px -34px 25px;padding:14px 34px;
+  background:rgba(245,242,238,.92);backdrop-filter:blur(14px);border-bottom:1px solid #e9e1da;
+  display:flex;align-items:center;justify-content:space-between;gap:18px
+}
+.brandline{font-size:13px;color:var(--muted)}
+.fx-live{
+  display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);
+  border-radius:14px;padding:8px 13px;box-shadow:0 4px 18px rgba(34,29,25,.04)
+}
+.fx-dot{width:8px;height:8px;border-radius:50%;background:#5f7b65;box-shadow:0 0 0 4px #5f7b6520}
+.fx-main{font-weight:850}
+.fx-sub{font-size:11px;color:var(--muted)}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-bottom:24px}
+.eyebrow{font-size:11px;font-weight:850;text-transform:uppercase;letter-spacing:1.7px;color:var(--accent)}
+h1{font-size:38px;line-height:1.05;margin:5px 0 8px;letter-spacing:-.8px}
+h2{font-size:22px;margin:0 0 15px} h3{font-size:17px;margin:0 0 7px}
+.sub{color:var(--muted);line-height:1.55}
+.btn{border:0;border-radius:10px;padding:11px 15px;background:var(--dark);color:#fff;font-weight:700}
+.btn.alt{background:var(--accent-soft);color:var(--ink)}
+.btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.btn.danger{background:#f3d9d5;color:#813e39}
+.btn.small{padding:8px 10px;font-size:12px}
+.section{display:none}.section.active{display:block}
+.hero{
+  position:relative;overflow:hidden;color:#fff;border-radius:24px;padding:31px;margin-bottom:18px;
+  background:linear-gradient(135deg,#2d2b28 0%,#51463d 58%,#6c5647 100%)
+}
+.hero:after{content:"";position:absolute;width:300px;height:300px;border-radius:50%;right:-100px;top:-160px;background:#ffffff0b}
+.hero h2{font-size:30px;margin:5px 0 20px}
+.route{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;gap:7px;padding:8px 12px;border-radius:999px;background:#ffffff13;border:1px solid #ffffff24;font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:17px;padding:19px;box-shadow:var(--shadow)}
+.stat small{color:var(--muted)}
+.stat .value{font-size:27px;font-weight:850;margin-top:7px}
+.stat .hint{font-size:11px;color:var(--muted);margin-top:5px}
+.two{display:grid;grid-template-columns:1.45fr 1fr;gap:17px;margin-top:17px}
+.three{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:18px}
+.section-head h1{margin-bottom:3px}
+.progress{height:9px;background:#eee8e3;border-radius:99px;overflow:hidden}.progress i{display:block;height:100%;width:0;background:var(--accent);border-radius:99px}
+.list{display:flex;flex-direction:column;gap:10px}
+.item{border:1px solid var(--line);border-radius:13px;padding:13px;background:#fff}
+.item.done{opacity:.55}
+.item-row{display:flex;align-items:flex-start;gap:12px}
+.check{width:19px;height:19px;margin-top:2px;accent-color:var(--accent)}
+.badge{display:inline-flex;align-items:center;padding:5px 8px;border-radius:999px;font-size:10px;font-weight:800;background:#f2eee9;color:#655e58}
+.badge.free{background:#e5eee6;color:#4d6753}.badge.cost{background:#f1e3d8;color:#79563f}
+.day-card{overflow:hidden}
+.day-head{display:flex;align-items:center;justify-content:space-between;gap:15px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.day-number{font-size:12px;color:var(--accent);font-weight:850;text-transform:uppercase;letter-spacing:1.2px}
+.timeline{position:relative;margin-top:14px}
+.timeline:before{content:"";position:absolute;left:65px;top:5px;bottom:5px;width:1px;background:var(--line)}
+.timeline-row{display:grid;grid-template-columns:54px 1fr;gap:23px;padding:0 0 16px;position:relative}
+.timeline-time{font-size:12px;font-weight:850;color:var(--muted);padding-top:3px;text-align:right}
+.timeline-content{position:relative;padding:12px 13px 12px 17px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.timeline-content:before{content:"";position:absolute;left:-29px;top:16px;width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--bg)}
+.timeline-title{font-weight:800}
+.timeline-meta{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.45}
+.timeline-price{font-size:12px;font-weight:800;margin-top:7px}
+.itinerary-item-card{display:grid;grid-template-columns:92px 1fr;gap:14px;align-items:stretch}
+.itinerary-thumb{width:92px;height:92px;border-radius:12px;background:#eee center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-size:30px;overflow:hidden}
+.itinerary-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.visit-photo{height:170px;border-radius:13px;background:#eee center/cover no-repeat;margin-bottom:13px}
+.visit-box{margin-top:10px;padding:10px 11px;border-radius:11px;background:#f7f3ef;border:1px solid var(--line);font-size:11px}
+.visit-box strong{font-size:12px}
+.visit-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:10px}
+.visit-check{width:19px;height:19px;accent-color:var(--green)}
+.main-payment{margin-top:8px;padding:16px;border:1px solid var(--line);border-radius:15px;background:#faf8f6}
+.payment-section-card{padding:18px;border:1px solid var(--line);border-radius:16px;background:#fff;box-shadow:var(--shadow)}
+.payment-hero{padding:18px;border-radius:16px;background:linear-gradient(135deg,#f4e8dd,#fbf8f5);border:1px solid var(--line);margin-bottom:17px}
+.payment-summary-big{font-size:24px;font-weight:900;margin-top:6px}
+.payment-result{margin-top:10px;padding:11px 12px;border-radius:11px;background:#f1e8e0;font-size:12px;line-height:1.5}
+.payment-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.installment-box{display:none;margin-top:10px;padding:12px;border:1px dashed var(--line);border-radius:12px;background:#fcfaf8}
+.installment-box.show{display:block}
+.payment-note{font-size:11px;color:var(--muted);line-height:1.45}
+.restaurant-links{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+@media(max-width:900px){.payment-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:620px){.payment-grid{grid-template-columns:1fr}}
+
+.main-payment-title{font-size:11px;font-weight:850;margin-bottom:8px}
+.cost-payment{margin-top:5px;font-size:10px;color:var(--muted)}
+.cost-payment strong{color:var(--ink)}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.place-img{height:185px;border-radius:13px;background:#ddd center/cover no-repeat;margin:-2px -2px 14px}
+.place-info{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0}
+.place-desc{font-size:13px;color:var(--muted);line-height:1.55;min-height:60px}
+.cost-list{display:flex;flex-direction:column;gap:9px}
+.cost-row{display:flex;justify-content:space-between;gap:15px;padding:10px 0;border-bottom:1px solid var(--line)}
+.cost-row:last-child{border-bottom:0}
+.cost-name{font-size:13px}.cost-value{font-weight:800;white-space:nowrap}
+.total-box{margin-top:12px;padding:16px;border-radius:14px;background:#f1e8e0}
+.total-line{display:flex;justify-content:space-between;align-items:center}.total-line strong{font-size:24px}
+.missing{color:#9a5c3d;font-size:11px;margin-top:5px}
+.notice{padding:13px 15px;border:1px solid #ead8c8;background:#f4e9df;border-radius:12px;color:#63554b;font-size:12px;line-height:1.55}
+.formgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.field{margin-bottom:12px}.field label{display:block;font-size:11px;font-weight:800;color:#5f5953;margin-bottom:6px}
+input,textarea,select{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 11px;background:#fff;color:var(--ink);outline:none}
+input:focus,textarea:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px #b9866217}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse}th,td{padding:11px;border-bottom:1px solid var(--line);text-align:left;font-size:12px;white-space:nowrap}th{font-size:10px;color:var(--muted);text-transform:uppercase}
+.empty{padding:30px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:13px}
+.kpi{font-size:30px;font-weight:850}.kpi-label{font-size:12px;color:var(--muted)}
+.budget-bar{height:12px;border-radius:99px;background:#eee8e3;overflow:hidden;margin:12px 0 5px}.budget-bar i{display:block;height:100%;width:0;background:var(--accent)}
+.modal{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;padding:20px;z-index:100}
+.modal.open{display:flex}.modalbox{width:min(720px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:20px;padding:22px;box-shadow:0 25px 80px #0005}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.login-screen{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:22px;background:radial-gradient(circle at 15% 15%,#ead9ca88,transparent 32%),radial-gradient(circle at 85% 85%,#b98b6838,transparent 34%),#f5f2ee}
+.login-card{width:min(440px,100%);background:#fff;border:1px solid var(--line);border-radius:24px;padding:38px;box-shadow:0 25px 80px #00000016;text-align:center}
+.login-mark{width:58px;height:58px;margin:0 auto 20px;border-radius:18px;background:var(--dark);color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px}
+.login-card h1{font-size:31px}.login-sub{color:var(--muted);font-size:13px;line-height:1.55;margin:0 0 23px}
+.login-error{display:none;margin-top:12px;padding:10px 12px;border-radius:10px;background:#f3d8d5;color:#813e39;font-size:12px;text-align:left}.login-error.show{display:block}
+.logout{position:fixed;right:22px;bottom:22px;z-index:40}
+.mobile-nav{display:none}
+.source-note{font-size:10px;color:#918a83;margin-top:10px}
+@media(max-width:1050px){.grid{grid-template-columns:repeat(2,1fr)}.cards{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}}
+@media(max-width:800px){
+  .sidebar{width:76px;padding:22px 10px}.logo{font-size:0;padding:0 8px 25px}.logo span{font-size:18px}.nav button{justify-content:center;font-size:0}.nav button:first-letter{font-size:18px}
+  .sidebar-foot{display:none}.main{margin-left:76px;padding:20px}.topbar{margin:-20px -20px 20px;padding:12px 20px}.brandline{display:none}
+}
+@media(max-width:620px){
+  .main{padding:14px}.topbar{margin:-14px -14px 15px;padding:10px 14px}.fx-live{width:100%;justify-content:center}
+  .top,.section-head{align-items:flex-start;flex-direction:column}.grid,.cards,.formgrid{grid-template-columns:1fr}.hero{padding:23px}.hero h2{font-size:26px}h1{font-size:30px}.two{grid-template-columns:1fr}
+  .timeline:before{left:52px}.timeline-row{grid-template-columns:42px 1fr;gap:20px}.timeline-content:before{left:-26px}.logout{right:12px;bottom:12px}
+}
+
+.price-monitor{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:17px}
+.price-card{position:relative;overflow:hidden;border:1px solid var(--line);background:#fff;border-radius:18px;padding:20px;box-shadow:var(--shadow)}
+.price-card .topline{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.price-card h3{margin:0 0 5px;font-size:18px}
+.price-card .provider{font-size:12px;color:var(--muted)}
+.price-big{font-size:29px;font-weight:900;letter-spacing:-.5px;margin:15px 0 3px}
+.price-meta{font-size:12px;color:var(--muted);line-height:1.5}
+.price-status{display:inline-flex;align-items:center;gap:6px;padding:6px 9px;border-radius:999px;background:#f4eee8;color:#6f5948;font-size:11px;font-weight:800;white-space:nowrap}
+.price-status.ok{background:#edf4ee;color:#55705c}.price-status.warn{background:#fbf0e7;color:#8a6245}.price-status.err{background:#f8e9e7;color:#9b514b}
+.price-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}.price-actions .btn{font-size:12px}
+.price-history{margin-top:14px;padding-top:13px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+.price-history strong{color:var(--ink)}
+.price-note{margin-top:12px;font-size:11px;color:var(--muted);line-height:1.45}
+
+.itinerary-overview{display:grid;grid-template-columns:1.5fr repeat(3,1fr);gap:12px;margin-bottom:16px}
+.overview-card{background:#fff;border:1px solid var(--line);border-radius:15px;padding:15px}
+.overview-card .ov-label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:850}
+.overview-card .ov-value{font-size:20px;font-weight:900;margin-top:5px}
+.overview-card .ov-sub{font-size:11px;color:var(--muted);margin-top:3px}
+.timeline-content.is-done{background:#f7f5f2;opacity:.68}
+.timeline-content.is-done .timeline-title{text-decoration:line-through}
+.timeline-actions{display:flex;align-items:center;gap:6px;margin-top:10px}
+.timeline-actions .btn{font-size:10px;padding:6px 8px}
+.timeline-check{width:17px;height:17px;accent-color:var(--accent)}
+.day-region{display:inline-flex;align-items:center;padding:5px 9px;border-radius:999px;background:#f4ece5;color:#745a49;font-size:10px;font-weight:850;margin-top:5px}
+.place-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:17px}
+.filter-btn{border:1px solid var(--line);background:#fff;color:var(--muted);padding:8px 12px;border-radius:999px;font-size:11px;font-weight:800}
+.filter-btn.active,.filter-btn:hover{background:var(--dark);border-color:var(--dark);color:#fff}
+.place-card{display:flex;flex-direction:column}
+.place-card .place-img{height:195px}
+.place-card .place-footer{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:14px}
+.place-card .place-fit{font-size:10px;color:var(--muted)}
+.payment-box{margin-top:12px;padding:13px;border:1px solid var(--line);border-radius:13px;background:#faf8f6}
+.payment-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.installment-box{display:none;margin-top:10px;padding:11px;border-radius:11px;background:#f3ebe4;border:1px solid #ead8c8}
+.installment-box.show{display:block}
+.payment-summary{font-size:11px;color:var(--muted);line-height:1.5}
+.payment-summary strong{color:var(--ink)}
+@media(max-width:1050px){.itinerary-overview{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:620px){.itinerary-overview{grid-template-columns:1fr}.payment-grid{grid-template-columns:1fr}.itinerary-item-card{grid-template-columns:68px 1fr}.itinerary-thumb{width:68px;height:68px}.visit-photo{height:135px}}
+@media(max-width:900px){.price-monitor{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div id="loginScreen" class="login-screen">
+  <div class="login-card">
+    <div class="login-mark">✈</div>
+    <div class="eyebrow">Planejamento da viagem</div>
+    <h1>Buenos Aires 2027</h1>
+    <p class="login-sub">Digite um e-mail autorizado para acessar o painel.</p>
+    <div class="field" style="text-align:left">
+      <label for="loginEmail">E-mail</label>
+      <input id="loginEmail" type="email" autocomplete="email" placeholder="seuemail@exemplo.com" onkeydown="if(event.key==='Enter')validarAcesso()">
+    </div>
+    <button class="btn" style="width:100%" onclick="validarAcesso()">Acessar painel</button>
+    <div id="loginError" class="login-error">Este e-mail não possui autorização para acessar este painel.</div>
+  </div>
+</div>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="logo">Buenos Aires <span>2027</span></div>
+    <nav class="nav">
+      <button class="active" onclick="show('inicio',this)">⌂ <span>Início</span></button>
+      <button onclick="show('roteiro',this)">◷ <span>Roteiro</span></button>
+      <button onclick="show('passeios',this)">⌖ <span>Passeios</span></button>
+      <button onclick="show('restaurantes',this)">♨ <span>Restaurantes</span></button>
+      <button onclick="show('orcamento',this)">$ <span>Gastos</span></button>
+      <button onclick="show('pagamentos',this)">▣ <span>Pagamentos</span></button>
+      <button onclick="show('checklist',this)">✓ <span>Checklist</span></button>
+      <button onclick="show('config',this)">⚙ <span>Configurações</span></button>
+    </nav>
+    <div class="sidebar-foot">Painel pessoal • 2 viajantes<br>08 a 17 de fevereiro de 2027</div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="brandline"><strong>BUENOS AIRES 2027</strong> · seu planejamento em um só lugar</div>
+      <div class="fx-live">
+        <span class="fx-dot"></span>
+        <div><div class="fx-main" id="fxTop">Carregando câmbio...</div><div class="fx-sub" id="fxTopSub">Atualização automática</div></div>
+      </div>
+    </div>
+
+    <section id="inicio" class="section active">
+      <div class="top">
+        <div><div class="eyebrow">Sua viagem</div><h1>Buenos Aires 2027</h1><div class="sub">08/02/2027 → 17/02/2027 · 2 viajantes</div></div>
+        <button class="btn" onclick="show('roteiro')">Abrir roteiro completo</button>
+      </div>
+
+      <div class="hero">
+        <div class="eyebrow" style="color:#d9b79b">ARGENTINA</div>
+        <h2>Buenos Aires</h2>
+        <div class="route">
+          <span class="pill">🚗 Dourados</span><span>→</span>
+          <span class="pill">✈ Foz do Iguaçu</span><span>→</span>
+          <span class="pill">🇦🇷 Buenos Aires</span>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="card stat"><small>Orçamento estimado</small><div class="value" id="dashBudget">R$ 0,00</div><div class="hint" id="dashBudgetHint">calculando...</div></div>
+        <div class="card stat"><small>Já confirmado</small><div class="value" id="dashConfirmed">R$ 0,00</div><div class="hint">passagens + Airbnb + outros valores informados</div></div>
+        <div class="card stat"><small>Falta reservar</small><div class="value" id="dashMissing">R$ 0,00</div><div class="hint">estimativas ainda não confirmadas</div></div>
+        <div class="card stat"><small>Câmbio</small><div class="value" id="dashFx">R$ 0,00</div><div class="hint">ARS 1.000</div></div>
+      </div>
+
+      <div class="two">
+        <div class="card">
+          <div class="row"><div><h2>Próximos dias</h2><div class="sub">O roteiro já vem organizado por data e região.</div></div><button class="btn alt small" onclick="show('roteiro')">Ver tudo</button></div>
+          <div id="homeDays" class="list"></div>
+        </div>
+        <div class="card">
+          <h2>Orçamento da viagem</h2>
+          <div class="kpi" id="homeTotal">R$ 0,00</div>
+          <div class="sub">estimativa para 2 pessoas</div>
+          <div class="budget-bar"><i id="budgetBar"></i></div>
+          <div class="row"><span class="kpi-label">Confirmado</span><strong id="homeConfirmedPct">0%</strong></div>
+          <div style="margin-top:17px" class="notice" id="homeBudgetNote"></div>
+          <button class="btn" style="margin-top:13px" onclick="show('orcamento')">Abrir orçamento</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="roteiro" class="section">
+  <div class="section-head">
+    <div><div class="eyebrow">Planejamento diário</div><h1>Roteiro completo</h1><div class="sub">Um dia por vez, com horários, região, deslocamentos, custos e pequenas ações. Marque o que já foi feito.</div></div>
+    <button class="btn" onclick="adicionarAtividade()">+ Adicionar atividade</button>
+  </div>
+  <div class="notice" style="margin:0 0 15px"><strong>Como usar:</strong> deixe desmarcado se não foi. Quando você marcar <strong>Fui</strong>, o painel abre o registro do gasto em <strong>ARS</strong>, converte para reais e permite escolher à vista ou cartão, de 1x a 12x, com ou sem juros.</div>
+  <div class="itinerary-overview" id="itineraryOverview"></div>
+  <div id="itinerary"></div>
+</section>
+
+    <section id="passeios" class="section">
+  <div class="section-head">
+    <div><div class="eyebrow">Lugares para conhecer</div><h1>Passeios</h1><div class="sub">Agora com opções para montar o roteiro por região, estilo e orçamento. Os preços são referências e devem ser conferidos perto da viagem.</div></div>
+    <button class="btn" onclick="show('roteiro')">Ver no roteiro</button>
+  </div>
+  <div class="place-filters" id="placeFilters"></div>
+  <div id="places" class="cards"></div>
+</section>
+
+    <section id="restaurantes" class="section">
+      <div class="section-head">
+        <div><div class="eyebrow">Onde comer</div><h1>Restaurantes</h1><div class="sub">Espaços para favoritos, orçamento por pessoa e links.</div></div>
+        <button class="btn" onclick="adicionarRestaurante()">+ Restaurante</button>
+      </div>
+      <div id="restaurants" class="cards"></div>
+    </section>
+
+    <section id="orcamento" class="section">
+      <div class="section-head">
+        <div><div class="eyebrow">Dinheiro</div><h1>Orçamento & câmbio</h1><div class="sub">O painel separa o que já está confirmado do que ainda é estimativa.</div></div>
+        <button class="btn" onclick="adicionarGasto()">+ Registrar gasto</button>
+      </div>
+
+      <div class="grid">
+        <div class="card"><div class="kpi" id="budgetTotal">R$ 0,00</div><div class="kpi-label">custo estimado da viagem</div></div>
+        <div class="card"><div class="kpi" id="budgetConfirmed">R$ 0,00</div><div class="kpi-label">custos confirmados</div></div>
+        <div class="card"><div class="kpi" id="budgetFlexible">R$ 0,00</div><div class="kpi-label">estimativas flexíveis</div></div>
+        <div class="card"><div class="kpi" id="budgetPerPerson">R$ 0,00</div><div class="kpi-label">por pessoa</div></div>
+      </div>
+
+      <div class="two">
+        <div class="card">
+          <div class="row"><h2>Composição do orçamento</h2><button class="btn alt small" onclick="show('config')">Editar valores</button></div>
+          <div id="costBreakdown" class="cost-list"></div>
+          <div class="total-box"><div class="total-line"><span>Total estimado</span><strong id="costTotal">R$ 0,00</strong></div><div class="missing" id="costMissing"></div></div>
+        </div>
+        <div class="card">
+          <h2>Câmbio automático</h2>
+          <div class="kpi" id="fxLarge">R$ 0,00</div>
+          <div class="sub">por ARS 1.000</div>
+          <div style="margin-top:15px" class="notice">
+            A cotação é buscada automaticamente de uma fonte externa. Ela é uma referência de mercado, não necessariamente a cotação do cartão, Western Union ou câmbio em espécie.
+          </div>
+          <div class="source-note">Fonte: ExchangeRate-API Open Access. Atualização da fonte: diária.</div>
+          <div style="margin-top:15px" class="formgrid">
+            <div class="field"><label>ARS</label><input id="convertArs" type="number" value="1000" oninput="converter()"></div>
+            <div class="field"><label>≈ BRL</label><input id="convertBrl" readonly></div>
+          </div>
+          <div class="sub" id="fxUpdated"></div>
+        </div>
+      </div>
+
+
+      <div class="card" style="margin-top:17px">
+        <div class="row"><div><h2 style="margin-bottom:4px">Reservas principais</h2><div class="sub">Os valores de passagem e Airbnb serão preenchidos manualmente. Assim você mantém controle sobre o preço realmente encontrado e sobre a forma de pagamento.</div></div><button class="btn alt small" onclick="show('config')">Editar valores</button></div>
+        <div class="price-monitor">
+          <article class="price-card">
+            <div class="topline"><div><h3>✈️ Passagens</h3><div class="provider">2 adultos · Foz do Iguaçu ↔ Buenos Aires</div></div><span class="price-status warn">Manual</span></div>
+            <div id="manualFlightBudgetPrice" class="price-big">A confirmar</div>
+            <div class="price-meta">Você pode atualizar o valor em <strong>Configurações → Custos principais</strong> quando encontrar uma tarifa que queira considerar.</div>
+            <div class="price-actions"><a class="btn small" href="https://www.skyscanner.com.br/transporte/passagens-aereas/igr/buea/270208/270217/?adultsv2=2&cabinclass=economy&childrenv2=&ref=home&rtn=1&preferdirects=false&outboundaltsenabled=false&inboundaltsenabled=false&fare-attributes=checked-bag,cabin-bag" target="_blank" rel="noopener">Abrir pesquisa no Skyscanner ↗</a></div>
+          </article>
+          <article class="price-card">
+            <div class="topline"><div><h3>🏠 Airbnb</h3><div class="provider">08/02/2027 → 17/02/2027 · 2 adultos</div></div><span class="price-status warn">Manual</span></div>
+            <div id="manualAirbnbBudgetPrice" class="price-big">A confirmar</div>
+            <div class="price-meta">Digite o total da estadia em <strong>Configurações → Custos principais</strong> quando quiser considerar esse valor no orçamento.</div>
+            <div class="price-actions"><a class="btn small" href="https://www.airbnb.com.br/rooms/1784575327864593344?adults=2&check_in=2027-02-08&check_out=2027-02-17" target="_blank" rel="noopener">Abrir Airbnb ↗</a></div>
+          </article>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:17px">
+        <h2>Gastos registrados</h2>
+        <div id="expenseTable"></div>
+      </div>
+    </section>
+
+    <section id="pagamentos" class="section">
+  <div class="section-head">
+    <div><div class="eyebrow">Reservas & parcelamento</div><h1>Pagamentos</h1><div class="sub">Controle passagem e Airbnb separadamente, com à vista, cartão, 1x a 12x e juros. Os passeios continuam sendo registrados diretamente no roteiro.</div></div>
+  </div>
+
+  <div class="payment-hero">
+    <div class="eyebrow">Como vamos controlar</div>
+    <div class="payment-summary-big">Valor da compra ≠ valor da parcela</div>
+    <div class="payment-note" style="margin-top:6px">Sem juros, o painel divide automaticamente o total. Com juros, você informa o valor real de cada parcela e o painel calcula o total que realmente sairá do cartão.</div>
+  </div>
+
+  <div class="two">
+    <div class="payment-section-card">
+      <div class="row"><div><div class="eyebrow">Reserva principal</div><h2 style="margin:3px 0">✈️ Passagens</h2><div class="sub">2 pessoas · Foz do Iguaçu ↔ Buenos Aires</div></div><span class="badge">Cartão ou à vista</span></div>
+      <div class="formgrid" style="margin-top:15px">
+        <div class="field"><label>Valor total da compra (R$)</label><input id="payFlightsValue" type="number" min="0" step="0.01" oninput="atualizarPagamentoAba('flights')"></div>
+        <div class="field"><label>Forma de pagamento</label><select id="payFlightsType" onchange="atualizarPagamentoAba('flights')"><option value="cash">À vista</option><option value="card">Cartão</option></select></div>
+      </div>
+      <div id="payFlightsCard" class="installment-box">
+        <div class="payment-grid">
+          <div class="field"><label>Parcelas</label><select id="payFlightsInstallments" onchange="atualizarPagamentoAba('flights')">
+<option value="1">1x</option><option value="2">2x</option><option value="3">3x</option><option value="4">4x</option><option value="5">5x</option><option value="6">6x</option><option value="7">7x</option><option value="8">8x</option><option value="9">9x</option><option value="10">10x</option><option value="11">11x</option><option value="12">12x</option>
+</select></div>
+          <div class="field"><label>Juros</label><select id="payFlightsInterest" onchange="atualizarPagamentoAba('flights')"><option value="false">Sem juros</option><option value="true">Com juros</option></select></div>
+          <div class="field"><label>Valor de cada parcela (R$)</label><input id="payFlightsInstallment" type="number" min="0" step="0.01" oninput="atualizarPagamentoAba('flights')"></div>
+          <div class="field"><label>Total efetivamente pago (R$)</label><input id="payFlightsFinal" readonly></div>
+        </div>
+        <div id="payFlightsHelp" class="payment-result"></div>
+      </div>
+      <div id="payFlightsResult" class="payment-result"></div>
+      <button class="btn" onclick="salvarPagamentoAba('flights')" style="margin-top:12px">Salvar pagamento da passagem</button>
+      <div class="payment-note" style="margin-top:9px">Você também pode abrir a pesquisa original pelo link na aba Gastos & orçamento.</div>
+    </div>
+
+    <div class="payment-section-card">
+      <div class="row"><div><div class="eyebrow">Hospedagem</div><h2 style="margin:3px 0">🏠 Airbnb</h2><div class="sub">08/02/2027 → 17/02/2027 · 2 pessoas</div></div><span class="badge">Reserva principal</span></div>
+      <div class="formgrid" style="margin-top:15px">
+        <div class="field"><label>Valor total da reserva (R$)</label><input id="payAirbnbValue" type="number" min="0" step="0.01" oninput="atualizarPagamentoAba('airbnb')"></div>
+        <div class="field"><label>Forma de pagamento</label><select id="payAirbnbType" onchange="atualizarPagamentoAba('airbnb')"><option value="cash">À vista</option><option value="card">Cartão</option></select></div>
+      </div>
+      <div id="payAirbnbCard" class="installment-box">
+        <div class="payment-grid">
+          <div class="field"><label>Parcelas</label><select id="payAirbnbInstallments" onchange="atualizarPagamentoAba('airbnb')">
+<option value="1">1x</option><option value="2">2x</option><option value="3">3x</option><option value="4">4x</option><option value="5">5x</option><option value="6">6x</option><option value="7">7x</option><option value="8">8x</option><option value="9">9x</option><option value="10">10x</option><option value="11">11x</option><option value="12">12x</option>
+</select></div>
+          <div class="field"><label>Juros</label><select id="payAirbnbInterest" onchange="atualizarPagamentoAba('airbnb')"><option value="false">Sem juros</option><option value="true">Com juros</option></select></div>
+          <div class="field"><label>Valor de cada parcela (R$)</label><input id="payAirbnbInstallment" type="number" min="0" step="0.01" oninput="atualizarPagamentoAba('airbnb')"></div>
+          <div class="field"><label>Total efetivamente pago (R$)</label><input id="payAirbnbFinal" readonly></div>
+        </div>
+        <div id="payAirbnbHelp" class="payment-result"></div>
+      </div>
+      <div id="payAirbnbResult" class="payment-result"></div>
+      <button class="btn" onclick="salvarPagamentoAba('airbnb')" style="margin-top:12px">Salvar pagamento do Airbnb</button>
+      <div class="payment-note" style="margin-top:9px">Com juros, o valor da parcela é digitado por você para refletir a cobrança real.</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:17px">
+    <div class="row"><div><h2>Resumo dos pagamentos</h2><div class="sub">O que já está definido para o cartão ou pagamento à vista.</div></div><button class="btn alt small" onclick="show('orcamento')">Ver gastos</button></div>
+    <div id="paymentsOverview" class="cost-list" style="margin-top:10px"></div>
+  </div>
+</section>
+
+<section id="checklist" class="section">
+      <div class="section-head">
+        <div><div class="eyebrow">Preparação</div><h1>Checklist</h1><div class="sub">Tudo que precisa estar resolvido antes de embarcar.</div></div>
+        <button class="btn" onclick="adicionarChecklist()">+ Item</button>
+      </div>
+      <div class="card">
+        <div class="progress"><i id="checkProgress"></i></div>
+        <p class="sub" id="checkText" style="margin:9px 0 18px"></p>
+        <div id="checklistItems" class="list"></div>
+      </div>
+    </section>
+
+    <section id="config" class="section">
+      <div class="section-head">
+        <div><div class="eyebrow">Controle</div><h1>Configurações</h1><div class="sub">Aqui você atualiza valores confirmados quando tiver as reservas em mãos.</div></div>
+      </div>
+
+      <div class="notice" style="margin-bottom:17px">
+        <strong>Importante:</strong> não inventei os valores das suas passagens e do Airbnb. A planilha com esses números não ficou recuperável nesta sessão. Por isso, eles aparecem como <strong>a confirmar</strong> até você preencher aqui.
+      </div>
+
+      <div class="card">
+        <h2>Custos principais</h2>
+        <div class="formgrid">
+          <div class="field"><label>Passagens aéreas · 2 pessoas (R$)</label><input id="cfgFlights" type="number" step="0.01" oninput="atualizarPagamentoPrincipal('flights')"></div>
+          <div class="field"><label>Airbnb · estadia completa (R$)</label><input id="cfgAirbnb" type="number" step="0.01" oninput="atualizarPagamentoPrincipal('airbnb')"></div>
+          <div class="field"><label>Carro Dourados ↔ Foz · combustível + pedágios (R$)</label><input id="cfgRoad" type="number" step="0.01"></div>
+          <div class="field"><label>Hotel em Foz, se necessário (R$)</label><input id="cfgFozHotel" type="number" step="0.01"></div>
+          <div class="field"><label>Transporte em Buenos Aires (R$)</label><input id="cfgLocalTransport" type="number" step="0.01"></div>
+          <div class="field"><label>Alimentação · 2 pessoas (R$)</label><input id="cfgFood" type="number" step="0.01"></div>
+          <div class="field"><label>Passeios pagos · 2 pessoas (R$)</label><input id="cfgAttractions" type="number" step="0.01"></div>
+          <div class="field"><label>Seguro viagem (R$)</label><input id="cfgInsurance" type="number" step="0.01"></div>
+          <div class="field"><label>Reserva para extras/compras (R$)</label><input id="cfgMisc" type="number" step="0.01"></div>
+        </div>
+
+        <div class="two" style="margin-top:4px">
+          <div class="main-payment">
+            <div class="main-payment-title">✈️ Pagamento da passagem</div>
+            <div class="payment-grid">
+              <div class="field"><label>Forma de pagamento</label><select id="cfgFlightsPayment" onchange="atualizarPagamentoPrincipal('flights')"><option value="cash">À vista</option><option value="card">Cartão</option></select></div>
+              <div class="field"><label>Parcelas</label><select id="cfgFlightsInstallments" onchange="atualizarPagamentoPrincipal('flights')"><option value="1">1x</option><option value="2">2x</option><option value="3">3x</option><option value="4">4x</option><option value="5">5x</option><option value="6">6x</option><option value="7">7x</option><option value="8">8x</option><option value="9">9x</option><option value="10">10x</option><option value="11">11x</option><option value="12">12x</option></select></div>
+              <div class="field"><label>Juros</label><select id="cfgFlightsInterest" onchange="atualizarPagamentoPrincipal('flights')"><option value="false">Sem juros</option><option value="true">Com juros</option></select></div>
+              <div class="field"><label>Valor de cada parcela</label><input id="cfgFlightsInstallmentValue" type="number" step="0.01" readonly></div>
+            </div>
+            <div id="cfgFlightsPaymentHelp" class="payment-summary"></div>
+          </div>
+
+          <div class="main-payment">
+            <div class="main-payment-title">🏠 Pagamento do Airbnb</div>
+            <div class="payment-grid">
+              <div class="field"><label>Forma de pagamento</label><select id="cfgAirbnbPayment" onchange="atualizarPagamentoPrincipal('airbnb')"><option value="cash">À vista</option><option value="card">Cartão</option></select></div>
+              <div class="field"><label>Parcelas</label><select id="cfgAirbnbInstallments" onchange="atualizarPagamentoPrincipal('airbnb')"><option value="1">1x</option><option value="2">2x</option><option value="3">3x</option><option value="4">4x</option><option value="5">5x</option><option value="6">6x</option><option value="7">7x</option><option value="8">8x</option><option value="9">9x</option><option value="10">10x</option><option value="11">11x</option><option value="12">12x</option></select></div>
+              <div class="field"><label>Juros</label><select id="cfgAirbnbInterest" onchange="atualizarPagamentoPrincipal('airbnb')"><option value="false">Sem juros</option><option value="true">Com juros</option></select></div>
+              <div class="field"><label>Valor de cada parcela</label><input id="cfgAirbnbInstallmentValue" type="number" step="0.01" readonly></div>
+            </div>
+            <div id="cfgAirbnbPaymentHelp" class="payment-summary"></div>
+          </div>
+        </div>
+
+        <div class="notice" style="margin-top:13px">
+          <strong>Como funciona:</strong> sem juros, o painel divide automaticamente o valor informado. Com juros, você informa o valor real de cada parcela e o painel calcula o total efetivamente pago no cartão.
+        </div>
+        <button class="btn" onclick="salvarConfig()" style="margin-top:13px">Salvar valores</button>
+      </div>
+
+      <div class="card" style="margin-top:17px">
+        <h2>Observações</h2>
+        <textarea id="cfgNotes" rows="5" placeholder="Anote aqui horários de voo, check-in, endereço do Airbnb, reservas etc."></textarea>
+        <button class="btn" style="margin-top:10px" onclick="salvarNotas()">Salvar observações</button>
+      </div>
+    </section>
+  </main>
+</div>
+
+<button id="logoutBtn" class="btn ghost small logout" style="display:none" onclick="sairDoPainel()">Sair do painel</button>
+
+<div class="modal" id="modal">
+  <div class="modalbox">
+    <div class="row"><h2 id="modalTitle">Adicionar</h2><button class="btn alt small" onclick="fecharModal()">Fechar</button></div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+/* =========================
+   ACESSO POR E-MAIL
+   ========================= */
+const EMAILS_AUTORIZADOS = [
+  "manurolonaguilar@gmail.com",
+  "COLOQUE_AQUI_O_SEGUNDO_EMAIL"
+];
+const LOGIN_KEY="ba2027_access_v2";
+
+function normalizarEmail(v){return String(v||"").trim().toLowerCase()}
+function validarAcesso(){
+  const input=document.getElementById("loginEmail"), err=document.getElementById("loginError");
+  const email=normalizarEmail(input.value);
+  err.classList.remove("show");
+  if(!email || !email.includes("@")){
+    err.textContent="Digite um e-mail válido.";
+    err.classList.add("show"); return;
+  }
+  if(!EMAILS_AUTORIZADOS.map(normalizarEmail).includes(email)){
+    err.textContent="Este e-mail não possui autorização para acessar este painel.";
+    err.classList.add("show"); input.select(); return;
+  }
+  localStorage.setItem(LOGIN_KEY,email);
+  document.getElementById("loginScreen").style.display="none";
+  document.getElementById("logoutBtn").style.display="block";
+}
+function sairDoPainel(){
+  localStorage.removeItem(LOGIN_KEY);
+  document.getElementById("loginScreen").style.display="flex";
+  document.getElementById("logoutBtn").style.display="none";
+}
+function verificarLogin(){
+  const ok=EMAILS_AUTORIZADOS.map(normalizarEmail).includes(normalizarEmail(localStorage.getItem(LOGIN_KEY)));
+  document.getElementById("loginScreen").style.display=ok?"none":"flex";
+  document.getElementById("logoutBtn").style.display=ok?"block":"none";
+}
+
+/* =========================
+   DADOS
+   ========================= */
+const KEY="ba2027_panel_v2";
+
+const defaultState={
+  costs:{
+    flights:0, airbnb:0, road:1000, fozHotel:0, localTransport:500,
+    food:3000, attractions:400, insurance:250, misc:500
+  },
+  costPayments:{
+    flights:{type:"cash",installments:1,interest:false,installmentValue:0},
+    airbnb:{type:"cash",installments:1,interest:false,installmentValue:0}
+  },
+  notes:"",
+  fx:3.28,
+  fxMeta:"",
+  expenses:[],
+  checklist:[
+    {id:1,text:"Confirmar horários dos voos Foz ↔ Buenos Aires",done:false},
+    {id:2,text:"Conferir reserva e endereço do Airbnb",done:false},
+    {id:3,text:"Contratar seguro viagem",done:false},
+    {id:4,text:"Definir dinheiro em espécie + cartão",done:false},
+    {id:5,text:"Comprar/organizar SUBE ou meio de pagamento do transporte",done:false},
+    {id:6,text:"Salvar documentos, passagens e reservas offline",done:false},
+    {id:7,text:"Conferir franquia de bagagem",done:false},
+    {id:8,text:"Separar roteiro por região no celular",done:false}
+  ],
+  itinerary:[
+    {
+      date:"2027-02-08",label:"08/02 · SEG",title:"Chegada e instalação",
+      items:[
+        ["05:00","🚗","Saída de Dourados → Foz do Iguaçu","Transporte","Estimativa de estrada","A calcular"],
+        ["12:00","☕","Almoço + pausa em Foz","Alimentação","Intervalo antes do aeroporto","R$ 70–120 / 2"],
+        ["14:00","✈","Aeroporto de Foz do Iguaçu","Transporte","Chegada antecipada para o voo","Conforme passagem"],
+        ["—","🇦🇷","Voo Foz do Iguaçu → Buenos Aires","Transporte","Horário exato depende da passagem já comprada","A confirmar"],
+        ["—","🏠","Check-in no Airbnb","Hospedagem","Deixar malas e fazer uma compra rápida de mercado","Incluso no Airbnb"]
+      ]
+    },
+    {
+      date:"2027-02-09",label:"09/02 · TER",title:"Centro histórico + Obelisco",
+      items:[
+        ["09:00","🥐","Café da manhã","Alimentação","Começar o dia sem pressa","R$ 35–55 / 2"],
+        ["10:00","📍","Plaza de Mayo + Casa Rosada + Catedral + Cabildo","Passeio","Circuito a pé pelo núcleo histórico de Buenos Aires","Grátis"],
+        ["12:30","🍴","Almoço no Centro / Microcentro","Alimentação","Menu executivo ou parrilla econômica","R$ 90–150 / 2"],
+        ["14:00","🏛","Avenida de Mayo + Café Tortoni (externo ou café)","Passeio","Caminhada histórica até a região do Congresso","R$ 0–80"],
+        ["16:00","📸","Obelisco + Avenida Corrientes","Passeio","Fotos e caminhada pela Corrientes","Grátis"],
+        ["19:30","🍝","Jantar perto do Airbnb","Alimentação","Noite leve após o primeiro circuito","R$ 120–180 / 2"]
+      ]
+    },
+    {
+      date:"2027-02-10",label:"10/02 · QUA",title:"Recoleta + El Ateneo + MALBA",
+      items:[
+        ["09:00","🥐","Café da manhã","Alimentação","—","R$ 35–55 / 2"],
+        ["10:00","🪦","Cementerio de la Recoleta","Passeio","Visita aos mausoléus e à região histórica","Grátis*"],
+        ["12:00","📚","El Ateneo Grand Splendid","Passeio","Antigo teatro transformado em livraria","Grátis"],
+        ["13:30","🍴","Almoço em Recoleta","Alimentação","Opções casuais na região","R$ 100–170 / 2"],
+        ["15:00","🎨","MALBA","Passeio","Coleção de arte latino-americana","ARS 14.000/adulto*"],
+        ["18:00","🌳","Caminhada pela Recoleta","Passeio","Floralis, Facultad de Derecho e arredores","Grátis"],
+        ["20:00","🍷","Jantar","Alimentação","Parrilla ou restaurante casual","R$ 140–220 / 2"]
+      ]
+    },
+    {
+      date:"2027-02-11",label:"11/02 · QUI",title:"La Boca + Caminito + Puerto Madero",
+      items:[
+        ["09:00","🥐","Café da manhã","Alimentação","—","R$ 35–55 / 2"],
+        ["10:00","🎨","Caminito + La Boca","Passeio","Rua-museu, murais, arquitetura e fotos","Grátis"],
+        ["12:30","🍴","Almoço em La Boca","Alimentação","Escolher lugar movimentado e bem avaliado","R$ 110–180 / 2"],
+        ["14:30","🚕","Deslocamento para Puerto Madero","Transporte","Ônibus/subte ou app, conforme praticidade","R$ 20–60"],
+        ["15:30","🌉","Puerto Madero + Puente de la Mujer","Passeio","Caminhada pelo dique e região","Grátis"],
+        ["18:30","🌇","Pôr do sol em Puerto Madero","Passeio","Melhor horário para fotos","Grátis"],
+        ["20:00","🍽","Jantar em Puerto Madero ou retorno","Alimentação","Escolher entre economia e uma noite especial","R$ 150–280 / 2"]
+      ]
+    },
+    {
+      date:"2027-02-12",label:"12/02 · SEX",title:"San Telmo + Mercado + Reserva",
+      items:[
+        ["09:00","🥐","Café da manhã","Alimentação","—","R$ 35–55 / 2"],
+        ["10:00","🏘","San Telmo","Passeio","Ruas antigas, Plaza Dorrego e antiguidades","Grátis"],
+        ["11:30","🥩","Mercado de San Telmo","Passeio + alimentação","Almoço/lanche dentro ou nos arredores","R$ 100–180 / 2"],
+        ["14:00","🌿","Reserva Ecológica Costanera Sur","Passeio","Caminhada ao ar livre, se o clima estiver bom","Grátis"],
+        ["17:00","☕","Café + descanso","Alimentação","Voltar ao Airbnb e descansar","R$ 35–70 / 2"],
+        ["20:00","🍝","Jantar","Alimentação","Noite livre","R$ 120–200 / 2"]
+      ]
+    },
+    {
+      date:"2027-02-13",label:"13/02 · SÁB",title:"Palermo + Rosedal + Jardim Japonês",
+      items:[
+        ["09:00","🥐","Café da manhã","Alimentação","—","R$ 35–55 / 2"],
+        ["10:00","🌳","Bosques de Palermo + Rosedal","Passeio","Caminhada e fotos","Grátis"],
+        ["12:30","🍴","Almoço em Palermo","Alimentação","Bares/restaurantes de bairro","R$ 110–180 / 2"],
+        ["14:30","🌸","Jardim Japonês","Passeio","Visita aos jardins e lagos","A confirmar"],
+        ["17:00","☕","Palermo Soho","Passeio","Lojas, cafés e ruas arborizadas","Grátis"],
+        ["20:00","🍷","Jantar em Palermo Soho","Alimentação","Reservar se escolher restaurante disputado","R$ 150–260 / 2"]
+      ]
+    },
+    {
+      date:"2027-02-14",label:"14/02 · DOM",title:"Tigre ou dia flexível",
+      items:[
+        ["08:30","🥐","Café da manhã","Alimentação","—","R$ 35–55 / 2"],
+        ["09:30","🚆","Trem para Tigre","Transporte","Bate-volta para sair um pouco do centro","A calcular"],
+        ["11:00","🚤","Puerto de Frutos + passeio pelo Delta","Passeio","Caminhada e, se quiserem, barco","Passeio de barco: a confirmar"],
+        ["13:30","🍴","Almoço em Tigre","Alimentação","Opções casuais","R$ 100–170 / 2"],
+        ["16:30","🚆","Retorno a Buenos Aires","Transporte","Volta de trem","A calcular"],
+        ["20:00","🍝","Jantar leve","Alimentação","—","R$ 100–160 / 2"]
+      ]
+    },
+    {
+      date:"2027-02-15",label:"15/02 · SEG",title:"Teatro Colón + centro + tarde livre",
+      items:[
+        ["09:00","🥐","Café da manhã","Alimentação","—","R$ 35–55 / 2"],
+        ["10:00","🎭","Visita guiada ao Teatro Colón","Passeio","Visita de aproximadamente 50 minutos","Preço: confirmar*"],
+        ["11:30","📸","Teatro Colón + Plaza Lavalle","Passeio","Fotos e caminhada pelo entorno","Grátis"],
+        ["13:00","🍴","Almoço","Alimentação","Microcentro/Corrientes","R$ 90–150 / 2"],
+        ["15:00","🛍","Tarde livre para compras","Compras","Avenida Santa Fe, Galerías Pacífico ou Palermo","Orçamento pessoal"],
+        ["20:00","🍽","Jantar","Alimentação","Última noite mais tranquila","R$ 120–220 / 2"]
+      ]
+    },
+    {
+      date:"2027-02-16",label:"16/02 · TER",title:"Dia coringa + favoritos",
+      items:[
+        ["09:00","☕","Café da manhã","Alimentação","—","R$ 35–55 / 2"],
+        ["10:00","📍","Voltar ao lugar favorito","Passeio","Use o dia para repetir o que mais gostaram","Variável"],
+        ["12:30","🍴","Almoço","Alimentação","—","R$ 100–170 / 2"],
+        ["14:30","🛍","Compras finais + mercado","Compras","Lembranças e itens para a viagem","Orçamento pessoal"],
+        ["18:00","🏠","Volta ao Airbnb + organizar malas","Hospedagem","Separar documentos e bagagem","—"],
+        ["20:00","🍷","Jantar de despedida","Alimentação","Escolher um lugar especial","R$ 160–280 / 2"]
+      ]
+    },
+    {
+      date:"2027-02-17",label:"17/02 · QUA",title:"Check-out e retorno",
+      items:[
+        ["08:00","🥐","Café da manhã","Alimentação","Usar o que restou no Airbnb","R$ 25–45 / 2"],
+        ["09:30","🧳","Check-out + malas","Hospedagem","Conferir documentos, carregadores e compras","—"],
+        ["—","✈","Buenos Aires → Foz do Iguaçu","Transporte","Horário conforme passagem","A confirmar"],
+        ["—","🚗","Foz → Dourados","Transporte","Retorno de carro","A calcular"]
+      ]
+    }
+  ],
+  places:[
+    {name:"Caminito",area:"La Boca",hours:"Acesso público; circuito turístico geralmente melhor pela manhã/tarde",priceBRL:0,priceText:"Grátis para circular",desc:"Rua-museu colorida de La Boca, com fachadas históricas, arte, tango e muita fotografia. Entra no roteiro junto com La Boca.",img:"https://commons.wikimedia.org/wiki/Special:Redirect/file/Caminito%20in%202026.jpg",source:"Wikimedia Commons"},
+    {name:"Cementerio de la Recoleta",area:"Recoleta",hours:"Visitas turísticas: 9h–17h; visita geral 7h–18h",priceBRL:0,priceText:"Grátis*",desc:"Um dos conjuntos históricos mais importantes da cidade, com mausoléus monumentais e túmulos de figuras históricas. A Prefeitura informa visitas turísticas das 9h às 17h.",img:"https://commons.wikimedia.org/wiki/Special:Redirect/file/Recoleta%20Cemetery%2C%20Buenos%20Aires.jpg",source:"Buenos Aires Ciudad + Wikimedia Commons"},
+    {name:"El Ateneo Grand Splendid",area:"Recoleta / Barrio Norte",hours:"Seg–sex 9h–21h · sáb 9h–22h · dom 12h–21h",priceBRL:0,priceText:"Grátis",desc:"Livraria instalada no antigo Teatro Grand Splendid, inaugurado em 1919. Ótima parada entre Recoleta e o centro.",img:"https://commons.wikimedia.org/wiki/Special:Redirect/file/El%20Ateneo%20Grand%20Splendid.JPG",source:"Wikimedia Commons"},
+    {name:"Puerto Madero + Puente de la Mujer",area:"Puerto Madero",hours:"Área pública, acesso livre",priceBRL:0,priceText:"Grátis",desc:"Passeio urbano à beira dos diques, ideal para caminhar no fim da tarde e ver a Puente de la Mujer.",img:"https://commons.wikimedia.org/wiki/Special:Redirect/file/Puente%20de%20la%20mujer%20Buenos%20Aires%20Argentina.JPG",source:"Wikimedia Commons"},
+    {name:"MALBA",area:"Palermo",hours:"Qui–seg 12h–20h · qua 11h–20h · ter fechado",priceBRL:0,priceText:"ARS 14.000 adulto* · quarta ARS 7.000",desc:"Museu de arte latino-americana. A tarifa publicada atualmente é uma referência de 2026 e pode mudar antes de fevereiro de 2027.",img:"https://commons.wikimedia.org/wiki/Special:Redirect/file/Malba%20-%20Buenos%20Aires.jpg",source:"MALBA"},
+    {name:"Teatro Colón",area:"Centro",hours:"Visitas guiadas atualmente divulgadas diariamente, com saídas a cada 15 min em determinados horários",priceBRL:0,priceText:"Preço a confirmar",desc:"Um dos grandes símbolos culturais de Buenos Aires. O site do teatro informa visitas de cerca de 50 minutos. O valor deve ser conferido perto da viagem.",img:"https://commons.wikimedia.org/wiki/Special:Redirect/file/Teatro%20Col%C3%B3n%2C%20Buenos%20Aires%2C%20Argentina.jpg",source:"Teatro Colón"},
+    {name:"Plaza de Mayo + Casa Rosada",area:"Centro",hours:"Área pública",priceBRL:0,priceText:"Grátis",desc:"Circuito histórico que reúne Casa Rosada, Catedral Metropolitana e Cabildo, perfeito para fazer a pé.",img:"https://commons.wikimedia.org/wiki/Special:Redirect/file/Plaza%20de%20Mayo%20-%20Buenos%20Aires.png",source:"Buenos Aires Turismo"},
+    {name:"San Telmo + Mercado",area:"San Telmo",hours:"Bairro aberto; mercado com horários próprios",priceBRL:0,priceText:"Grátis para circular",desc:"Ruas antigas, antiquários, Plaza Dorrego e o Mercado de San Telmo. Bom para combinar passeio e almoço.",img:"https://commons.wikimedia.org/wiki/Special:Redirect/file/Mercado%20de%20San%20Telmo%202025%2001.jpg",source:"Wikimedia Commons"},
+    {name:"Bosques de Palermo + Rosedal",area:"Palermo",hours:"Área pública",priceBRL:0,priceText:"Grátis",desc:"Uma das melhores opções para uma manhã leve, com jardins, lagos e caminhada.",img:"https://commons.wikimedia.org/wiki/Special:Redirect/file/Rosedal%20Buenos%20Aires.jpg",source:"Wikimedia Commons",fit:"Natureza + fotos",duration:"1–2h"},
+    {name:"Obelisco + Avenida Corrientes",area:"Centro",hours:"Área pública",priceBRL:0,priceText:"Grátis",desc:"O cartão-postal mais conhecido de Buenos Aires. Vale combinar com a Corrientes e uma pausa em um café ou pizzaria.",img:"https://commons.wikimedia.org/wiki/Special:Redirect/file/Obelisco%20Buenos%20Aires.jpg",source:"Wikimedia Commons",fit:"Fotos + caminhada",duration:"1h"},
+    {name:"Floralis Genérica",area:"Recoleta",hours:"Área pública",priceBRL:0,priceText:"Grátis",desc:"Escultura metálica monumental na Plaza de las Naciones Unidas. Boa parada junto ao Cemitério, Faculdade de Direito e MALBA.",img:"https://commons.wikimedia.org/wiki/Special:Redirect/file/Floralis%20Gen%C3%A9rica%20%2827547134408%29.jpg",source:"Wikimedia Commons",fit:"Fotos + arquitetura",duration:"30–60min"},
+    {name:"Jardim Japonês",area:"Palermo",hours:"Consultar horário do dia",priceBRL:0,priceText:"Ingresso a confirmar",desc:"Jardins, lagos, pontes e uma atmosfera mais tranquila. Combina muito bem com Rosedal e Bosques de Palermo.",img:"https://commons.wikimedia.org/wiki/Special:Redirect/file/Jardim%20Japon%C3%AAs%20de%20Buenos%20Aires.jpg",source:"Wikimedia Commons",fit:"Natureza + descanso",duration:"1–1,5h"},
+    {name:"Palacio Barolo",area:"Centro",hours:"Visita interna mediante tour; exterior livre",priceBRL:0,priceText:"Tour a confirmar",desc:"Prédio histórico inspirado na Divina Comédia. O exterior já rende fotos, mas a visita guiada é a melhor forma de conhecer o interior e os mirantes.",img:"https://commons.wikimedia.org/wiki/Special:Redirect/file/Palacio%20Barolo%20.JPG",source:"Wikimedia Commons",fit:"Arquitetura + mirante",duration:"1,5–2h"},
+    {name:"Delta do Tigre",area:"Tigre",hours:"Bate-volta; verificar horários de trem e barcos",priceBRL:0,priceText:"Trem + barco a confirmar",desc:"Passeio diferente do centro, com canais, ilhas e possibilidade de navegação pelo Delta do Paraná. Ideal para um dia inteiro.",img:"https://commons.wikimedia.org/wiki/Special:Redirect/file/Delta%20del%20Tigre%201.jpg",source:"Wikimedia Commons",fit:"Bate-volta + natureza",duration:"Dia inteiro"},
+    {name:"Reserva Ecológica Costanera Sur",area:"Puerto Madero",hours:"Consultar horários e dias de abertura",priceBRL:0,priceText:"Grátis",desc:"Trilhas e áreas verdes em pleno entorno de Puerto Madero. Ótima alternativa para um dia de clima agradável.",img:"https://commons.wikimedia.org/wiki/Special:Redirect/file/Reserva%20Ecol%C3%B3gica%20Costanera%20Sur%2C%20Buenos%20Aires%2001.jpg",source:"Wikimedia Commons",fit:"Natureza + caminhada",duration:"2–3h"},
+    {name:"La Bombonera",area:"La Boca",hours:"Exterior livre; visitas internas dependem do tour",priceBRL:0,priceText:"Exterior grátis · tour a confirmar",desc:"Estádio do Boca Juniors. Se vocês gostam de futebol, é uma extensão natural do passeio pelo Caminito.",img:"https://commons.wikimedia.org/wiki/Special:Redirect/file/La%20Bombonera%202025.jpg",source:"Wikimedia Commons",fit:"Futebol + La Boca",duration:"1–2h"},
+    {name:"Café Tortoni",area:"Centro",hours:"Consultar horário do dia",priceBRL:0,priceText:"Consumo no local",desc:"Café histórico que pode entrar como pausa no circuito do Centro. Aqui o passeio é mais pela experiência do que por uma atração paga.",img:"https://commons.wikimedia.org/wiki/Special:Redirect/file/Cafe%20Tortoni%20BA.jpg",source:"Wikimedia Commons",fit:"Café + história",duration:"45–90min"}
+  ],
+  restaurants:[
+    {name:"Don Julio",area:"Palermo",priceARS:100000,desc:"Parrilla argentina clássica e uma das escolhas mais disputadas. Ideal para uma noite especial.",instagram:"https://www.instagram.com/donjulioparrilla/",link:"https://parrilladonjulio.com.ar/"},
+    {name:"La Cabrera",area:"Palermo",priceARS:50000,desc:"Parrilla tradicional, porções generosas e clima descontraído. Boa opção para comparar com Don Julio.",instagram:"https://www.instagram.com/lacabrera_bsas/",link:"https://lacabrera.com.ar/"},
+    {name:"El Preferido de Palermo",area:"Palermo",priceARS:50000,desc:"Bodegón porteño com releituras de clássicos argentinos e ambiente bem característico.",instagram:"https://www.instagram.com/elpreferidodepalermo/",link:"https://elpreferido.meitre.com/"},
+    {name:"Mishiguene",area:"Palermo",priceARS:100000,desc:"Cozinha de tradição judaica com proposta mais sofisticada. Para colocar na lista de jantar especial.",instagram:"https://www.instagram.com/mishigueneba/",link:"https://mishiguenerestaurant.com/"},
+    {name:"Gran Dabbang",area:"Palermo",priceARS:55000,desc:"Cozinha criativa com influência asiática e indiana, em formato mais informal e disputado.",instagram:"https://www.instagram.com/dabbang_/",link:"https://grandabbang.com/"},
+    {name:"La Carnicería",area:"Palermo",priceARS:50000,desc:"Parrilla contemporânea, ótima para provar cortes e preparos diferentes do churrasco argentino.",instagram:"https://www.instagram.com/xlacarniceriax/",link:""},
+    {name:"La Brigada",area:"San Telmo",priceARS:55000,desc:"Parrilla tradicional em San Telmo, perfeita para combinar com um dia pelo bairro histórico.",instagram:"https://www.instagram.com/labrigadaparrilla/",link:""},
+    {name:"Corte Comedor",area:"Belgrano",priceARS:75000,desc:"Parrilla contemporânea com foco em carnes, vinhos e ambiente mais elegante.",instagram:"https://www.instagram.com/cortecomedor/",link:""},
+    {name:"Narda Comedor",area:"Belgrano",priceARS:50000,desc:"Restaurante da chef Narda Lepes, com foco em vegetais, produtos sazonais e cozinha argentina contemporânea.",instagram:"https://www.instagram.com/nardacomedor/",link:"https://nardacomedor.com/"},
+    {name:"Osaka",area:"Puerto Madero",priceARS:100000,desc:"Cozinha nikkei peruano-japonesa em uma opção mais sofisticada para jantar.",instagram:"https://www.instagram.com/osakabsas/",link:""},
+    {name:"La Bistecca",area:"Puerto Madero",priceARS:50000,desc:"Opção estilo buffet com carnes, massas, saladas e sobremesas, boa para controlar melhor o custo por pessoa.",instagram:"https://www.instagram.com/labisteccapastagrill/",link:""},
+    {name:"Siga La Vaca",area:"Puerto Madero",priceARS:60900,desc:"Parrilla livre com bebida e sobremesa incluídas em determinados menus. Uma alternativa prática para comer bastante sem ficar calculando prato por prato.",instagram:"https://www.instagram.com/sigalavaca/",link:"https://sigalavaca.com/"},
+    {name:"Café Tortoni",area:"Centro",priceARS:15000,desc:"Café histórico para encaixar no circuito do Centro, ótimo para lanche, café e sobremesa.",instagram:"https://www.instagram.com/cafetortoni/",link:"https://www.cafetortoni.com.ar/"},
+    {name:"Crizia",area:"Palermo",priceARS:100000,desc:"Alta gastronomia com foco em frutos do mar, ostras, vinhos e produtos argentinos.",instagram:"https://www.instagram.com/crizia_restaurant/",link:"https://crizia.com.ar/"},
+    {name:"Cucina Paradiso",area:"Palermo / Recoleta",priceARS:50000,desc:"Cozinha italiana do chef Donato De Santis, com massas, pizzas e sobremesas. Boa opção para variar da carne.",instagram:"https://www.instagram.com/cucinaparadisoba/",link:"https://www.cucinaparadiso.com/"},
+    {name:"El Ferroviario",area:"Liniers",priceARS:45000,desc:"Parrilla conhecida por porções grandes e proposta mais tradicional. Vale considerar se estiverem dispostos a sair do circuito turístico.",instagram:"https://www.instagram.com/elferroviariook/",link:"https://elferroviarioparrilla.com/"},
+    {name:"Parrilla Peña",area:"Recoleta",priceARS:45000,desc:"Parrilla clássica e mais local, com foco em cortes na brasa e ambiente sem tanta formalidade.",instagram:"https://www.instagram.com/parrillitapena/",link:""},
+    {name:"Fervor Brasas",area:"Recoleta",priceARS:70000,desc:"Brasserie tradicional com carnes, peixes e frutos do mar preparados na brasa. Boa opção para um jantar mais elegante.",instagram:"https://www.instagram.com/fervorbrasas/",link:""},
+    {name:"El Obrero",area:"La Boca",priceARS:35000,desc:"Bodegón tradicional de La Boca, com porções generosas, massas, milanesas e pratos argentinos clássicos.",instagram:"https://www.instagram.com/elobrero1954/",link:""},
+    {name:"Sottovoce",area:"Recoleta",priceARS:50000,desc:"Clássico italiano da cidade, conhecido por massas frescas, risotos e cozinha italiana tradicional.",instagram:"https://www.instagram.com/sottovoce_ristorante/",link:""},
+    {name:"La Alacena Trattoria",area:"Palermo",priceARS:45000,desc:"Trattoria de bairro com massas e cozinha italiana, boa para uma refeição mais casual e com ótimo custo-benefício.",instagram:"https://www.instagram.com/laalacenatrattoria/",link:""},
+    {name:"Julia Restaurante",area:"Villa Crespo",priceARS:120000,desc:"Cozinha autoral contemporânea, pequena e disputada. Boa escolha para uma noite gastronômica especial.",instagram:"https://www.instagram.com/julia.restaurante/",link:""},
+    {name:"Aramburu",area:"Recoleta",priceARS:180000,desc:"Experiência gastronômica de alta cozinha em menu degustação. Para colocar como jantar especial da viagem.",instagram:"https://www.instagram.com/arambururesto/",link:"https://arambururesto.com.ar/"},
+    {name:"Elena",area:"Retiro",priceARS:100000,desc:"Restaurante do Four Seasons, com ambiente elegante e proposta ideal para uma refeição mais sofisticada.",instagram:"https://www.instagram.com/elena.restaurante/",link:""},
+    {name:"Malvón",area:"Villa Crespo",priceARS:47000,desc:"Restaurante descontraído de Villa Crespo, bom para brunch, almoço ou jantar e para variar das parrillas.",instagram:"https://www.instagram.com/malvonba/",link:""},
+    {name:"Trescha",area:"Palermo",priceARS:180000,desc:"Experiência autoral e experimental em formato degustação, para quem quiser reservar uma noite gastronômica diferente.",instagram:"https://www.instagram.com/trescha.restaurant/",link:""},
+    {name:"Roux",area:"Recoleta",priceARS:60000,desc:"Restaurante de cozinha autoral com influência mediterrânea, conhecido por pratos delicados e carta de vinhos.",instagram:"https://www.instagram.com/rouxresto/",link:""}
+  ]
+};
+
+let state=JSON.parse(localStorage.getItem(KEY)||"null") || defaultState;
+state.costs=Object.assign({},defaultState.costs,state.costs||{});
+state.costPayments=Object.assign({},defaultState.costPayments,state.costPayments||{});
+["flights","airbnb"].forEach(k=>{state.costPayments[k]=Object.assign({},defaultState.costPayments[k],state.costPayments[k]||{});});
+state.expenses=state.expenses||[];
+state.expenses.forEach(e=>{ if(!e.payment) e.payment={type:"cash",installments:1,interest:false,installmentValue:Number(e.value)||0}; });
+state.checklist=state.checklist||defaultState.checklist;
+state.itinerary=state.itinerary||defaultState.itinerary;
+state.itinerary.forEach(d=>d.items.forEach(it=>{if(it.length<7)it[6]=false;if(!it[7])it[7]=null;}));
+state.places=state.places||defaultState.places;
+state.restaurants=state.restaurants||[];
+// Mantém restaurantes personalizados e acrescenta novas sugestões do painel sem duplicar nomes.
+const restaurantesAtuais=new Set(state.restaurants.map(r=>String(r.name||'').trim().toLowerCase()));
+defaultState.restaurants.forEach(r=>{
+  const key=String(r.name||'').trim().toLowerCase();
+  if(key && !restaurantesAtuais.has(key)) state.restaurants.push(r);
+});
+state.placeFilter=state.placeFilter||"Todos";
+// Adiciona novas sugestões ao painel sem apagar o que você já tiver editado.
+defaultState.places.forEach(p=>{if(!state.places.some(x=>x.name===p.name))state.places.push(p)});
+defaultState.restaurants.forEach(r=>{if(!state.restaurants.some(x=>x.name===r.name))state.restaurants.push(r)});
+
+function save(){localStorage.setItem(KEY,JSON.stringify(state));render()}
+function money(v){return new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(Number(v)||0)}
+function ars(v){return new Intl.NumberFormat("pt-BR",{maximumFractionDigits:0}).format(Number(v)||0)}
+function show(id,btn){
+  document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
+  if(btn)btn.classList.add("active");
+  else{
+    const target=[...document.querySelectorAll(".nav button")].find(b=>b.getAttribute("onclick")?.includes("'"+id+"'"));
+    if(target)target.classList.add("active");
+  }
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function modal(title,body){document.getElementById("modalTitle").textContent=title;document.getElementById("modalBody").innerHTML=body;document.getElementById("modal").classList.add("open")}
+function fecharModal(){document.getElementById("modal").classList.remove("open")}
+
+/* FX automático */
+async function atualizarCambio(){
+  try{
+    const res=await fetch("https://open.er-api.com/v6/latest/USD",{cache:"no-store"});
+    const data=await res.json();
+    const usdBRL=data.rates.BRL, usdARS=data.rates.ARS;
+    const brlArs=usdARS/usdBRL;
+    state.fx=1000/brlArs;
+    state.fxMeta=data.time_last_update_utc||"";
+    document.getElementById("fxTop").textContent=`1 BRL ≈ ${brlArs.toFixed(1)} ARS`;
+    document.getElementById("fxTopSub").textContent=`ARS 1.000 ≈ ${money(state.fx)} · automático`;
+    document.getElementById("dashFx").textContent=money(state.fx);
+    document.getElementById("fxLarge").textContent=money(state.fx);
+    document.getElementById("fxUpdated").textContent=state.fxMeta?`Última atualização da fonte: ${state.fxMeta}`:"";
+    converter();
+    localStorage.setItem(KEY,JSON.stringify(state));
+  }catch(e){
+    document.getElementById("fxTop").textContent=`ARS 1.000 ≈ ${money(state.fx)}`;
+    document.getElementById("fxTopSub").textContent="Usando último valor salvo";
+    document.getElementById("dashFx").textContent=money(state.fx);
+    document.getElementById("fxLarge").textContent=money(state.fx);
+    converter();
+  }
+}
+function converter(){
+  const a=Number(document.getElementById("convertArs").value)||0;
+  document.getElementById("convertBrl").value=money(a*state.fx/1000);
+}
+setInterval(atualizarCambio,15*60*1000);
+
+/* Orçamento */
+const costLabels=[
+  ["flights","Passagens aéreas","confirmado"],
+  ["airbnb","Airbnb","confirmado"],
+  ["road","Dourados ↔ Foz · combustível + pedágios","estimativa"],
+  ["fozHotel","Hotel em Foz","estimativa"],
+  ["localTransport","Transporte em Buenos Aires","estimativa"],
+  ["food","Alimentação","estimativa"],
+  ["attractions","Passeios pagos","estimativa"],
+  ["insurance","Seguro viagem","estimativa"],
+  ["misc","Extras / compras","estimativa"]
+];
+function costEffective(key){
+  const base=Number(state.costs[key])||0;
+  const p=state.costPayments?.[key];
+  if(!p||p.type!=="card"||!p.interest) return base;
+  const final=(Number(p.installmentValue)||0)*(Number(p.installments)||1);
+  return final||base;
+}
+function budgetTotal(){return Object.keys(state.costs).reduce((a,k)=>a+costEffective(k),0)}
+function confirmedTotal(){return costEffective("flights")+costEffective("airbnb")}
+function renderBudget(){
+  const total=budgetTotal(), confirmed=confirmedTotal(), flexible=total-confirmed;
+  document.getElementById("budgetTotal").textContent=money(total);
+  document.getElementById("budgetConfirmed").textContent=money(confirmed);
+  document.getElementById("budgetFlexible").textContent=money(flexible);
+  document.getElementById("budgetPerPerson").textContent=money(total/2);
+  document.getElementById("dashBudget").textContent=money(total);
+  document.getElementById("dashConfirmed").textContent=money(confirmed);
+  document.getElementById("dashMissing").textContent=money(flexible);
+  document.getElementById("homeTotal").textContent=money(total);
+  const pct=total?Math.min(100,confirmed/total*100):0;
+  document.getElementById("budgetBar").style.width=pct+"%";
+  document.getElementById("homeConfirmedPct").textContent=Math.round(pct)+"%";
+  document.getElementById("dashBudgetHint").textContent=confirmed?"inclui os valores confirmados que você cadastrar":"passagens e Airbnb ainda precisam ser preenchidos";
+  document.getElementById("homeBudgetNote").innerHTML=confirmed
+    ? `Até agora, <strong>${money(confirmed)}</strong> estão marcados como confirmados. O restante é uma reserva de planejamento e pode ser ajustado.`
+    : `A base de planejamento está pronta. <strong>Preencha passagens e Airbnb</strong> em Configurações para o total ficar fiel à sua pesquisa.`;
+  document.getElementById("costTotal").textContent=money(total);
+  document.getElementById("costMissing").textContent=confirmed?"":"Passagens e/ou Airbnb ainda estão sem valor confirmado.";
+  const mf=document.getElementById("manualFlightBudgetPrice"), ma=document.getElementById("manualAirbnbBudgetPrice");
+  if(mf)mf.textContent=state.costs.flights?money(state.costs.flights):"A confirmar";
+  if(ma)ma.textContent=state.costs.airbnb?money(state.costs.airbnb):"A confirmar";
+  document.getElementById("costBreakdown").innerHTML=costLabels.map(([k,label,type])=>{
+    const base=Number(state.costs[k])||0;
+    const v=costEffective(k);
+    const pending=(k==="flights"||k==="airbnb")&&!base;
+    const payment=(k==="flights"||k==="airbnb")&&base?`<div class="cost-payment">${mainCostPaymentLabel(k)}</div>`:"";
+    return `<div class="cost-row"><div><div class="cost-name">${label}</div><div class="kpi-label">${pending?"A confirmar":type}</div>${payment}</div><div class="cost-value">${pending?"—":money(v)}</div></div>`
+  }).join("");
+}
+function mainCostPaymentLabel(k){
+  const p=state.costPayments?.[k];
+  const base=Number(state.costs[k])||0;
+  if(!p||p.type==="cash") return "À vista";
+  const n=Number(p.installments)||1;
+  const parc=Number(p.installmentValue)||0;
+  const final=p.interest&&parc?parc*n:base;
+  return `Cartão · ${n}x ${p.interest?"com juros":"sem juros"} · ${money(parc||base/n)}${p.interest?`/parcela · total ${money(final)}`:"/parcela"}`;
+}
+function paymentLabel(e){
+  if(!e.payment||e.payment.type==="cash") return "À vista";
+  const n=Number(e.payment.installments)||1;
+  const parc=Number(e.payment.installmentValue)||0;
+  return `Cartão · ${n}x${e.payment.interest?" com juros":" sem juros"} · ${money(parc)}/parcela`;
+}
+function renderExpenses(){
+  const box=document.getElementById("expenseTable");
+  if(!state.expenses.length){box.innerHTML='<div class="empty">Nenhum gasto real registrado ainda. Quando começar a pagar, registre aqui a forma de pagamento e o parcelamento.</div>';return}
+  box.innerHTML=`<div class="table-wrap"><table><thead><tr><th>Data</th><th>Descrição</th><th>Categoria</th><th>Valor</th><th>Pagamento</th><th>Em BRL</th><th></th></tr></thead><tbody>${state.expenses.map(e=>{
+    const brl=e.currency==="BRL"?e.value:(e.value*state.fx/1000);
+    return `<tr><td>${e.date||""}</td><td>${e.desc}</td><td>${e.cat}</td><td>${e.currency} ${Number(e.value).toLocaleString("pt-BR",{minimumFractionDigits:2})}</td><td>${paymentLabel(e)}</td><td>${money(brl)}</td><td><button class="btn danger small" onclick="excluirGasto(${e.id})">Excluir</button></td></tr>`
+  }).join("")}</tbody></table></div>`;
+}
+function atualizarParcelamento(){
+  const type=document.getElementById("gPayment")?.value;
+  const box=document.getElementById("installmentBox");
+  if(!box)return;
+  box.classList.toggle("show",type==="card");
+  if(type!=="card")return;
+  const n=Number(document.getElementById("gInstallments").value)||1;
+  const total=Number(document.getElementById("gValue").value)||0;
+  const interest=document.getElementById("gInterest").value==="true";
+  const out=document.getElementById("gInstallmentValue");
+  if(!interest){
+    out.value=n?((total/n).toFixed(2)):"";
+    out.readOnly=true;
+    document.getElementById("gInstallmentHelp").innerHTML=`Sem juros: <strong>${money(total/n||0)}</strong> por parcela · ${n}x = ${money(total)}.`;
+  }else{
+    out.readOnly=false;
+    document.getElementById("gInstallmentHelp").innerHTML="Com juros: informe manualmente o valor de cada parcela que aparece na fatura.";
+  }
+}
+function adicionarGasto(){
+  modal("Registrar gasto",`
+    <div class="formgrid">
+      <div class="field"><label>Data</label><input id="gDate" type="date" value="2027-02-08"></div>
+      <div class="field"><label>Descrição</label><input id="gDesc" placeholder="Ex.: jantar, passagem, ingresso"></div>
+      <div class="field"><label>Valor total informado</label><input id="gValue" type="number" step="0.01" oninput="atualizarParcelamento()"></div>
+      <div class="field"><label>Moeda</label><select id="gCurrency"><option>BRL</option><option>ARS</option></select></div>
+      <div class="field"><label>Categoria</label><select id="gCat"><option>Alimentação</option><option>Transporte</option><option>Passeio</option><option>Compras</option><option>Hospedagem</option><option>Passagem</option><option>Seguro</option><option>Outro</option></select></div>
+      <div class="field"><label>Como vai pagar?</label><select id="gPayment" onchange="atualizarParcelamento()"><option value="cash">À vista</option><option value="card">Cartão</option></select></div>
+    </div>
+    <div id="installmentBox" class="installment-box">
+      <div class="payment-grid">
+        <div class="field"><label>Parcelas</label><select id="gInstallments" onchange="atualizarParcelamento()"><option value="1">1x</option><option value="2">2x</option><option value="3">3x</option><option value="4">4x</option><option value="5">5x</option><option value="6">6x</option><option value="7">7x</option><option value="8">8x</option><option value="9">9x</option><option value="10">10x</option><option value="11">11x</option><option value="12">12x</option></select></div>
+        <div class="field"><label>Juros</label><select id="gInterest" onchange="atualizarParcelamento()"><option value="false">Sem juros</option><option value="true">Com juros</option></select></div>
+      </div>
+      <div class="field"><label>Valor de cada parcela</label><input id="gInstallmentValue" type="number" step="0.01" readonly></div>
+      <div id="gInstallmentHelp" class="payment-summary">Sem juros: o painel divide automaticamente o valor total pelo número de parcelas.</div>
+    </div>
+    <button class="btn" onclick="salvarGasto()" style="margin-top:12px">Salvar gasto</button>
+  `)
+}
+function salvarGasto(){
+  const value=Number(gValue.value);
+  if(!gDesc.value.trim()||!value){alert("Preencha descrição e valor.");return}
+  const isCard=gPayment.value==="card";
+  const installments=isCard?Number(gInstallments.value)||1:1;
+  const interest=isCard?gInterest.value==="true":false;
+  const installmentValue=isCard?(interest?Number(gInstallmentValue.value)||0:value/installments):value;
+  if(isCard&&interest&&!installmentValue){alert("Informe o valor de cada parcela quando houver juros.");return}
+  const e={id:Date.now(),date:gDate.value,desc:gDesc.value.trim(),value,currency:gCurrency.value,cat:gCat.value,payment:{type:isCard?"card":"cash",installments,interest,installmentValue}};
+  state.expenses.push(e);fecharModal();save()
+}
+function excluirGasto(id){state.expenses=state.expenses.filter(x=>x.id!==id);save()}
+
+/* Roteiro */
+function diaRegiao(d){
+  const map={
+    "2027-02-08":"Dourados → Foz → Buenos Aires",
+    "2027-02-09":"Centro histórico",
+    "2027-02-10":"Recoleta + Palermo",
+    "2027-02-11":"La Boca + Puerto Madero",
+    "2027-02-12":"San Telmo + Costanera Sur",
+    "2027-02-13":"Palermo",
+    "2027-02-14":"Tigre",
+    "2027-02-15":"Centro + Teatro Colón",
+    "2027-02-16":"Dia flexível",
+    "2027-02-17":"Buenos Aires → Foz → Dourados"
+  };
+  return map[d.date]||"Roteiro personalizado";
+}
+function itemDone(it){return !!it[6]}
+function placeImageForItem(title){
+  const t=String(title||"").toLowerCase();
+  const p=state.places.find(x=>{
+    const n=String(x.name||"").toLowerCase();
+    return n && (t.includes(n.split(" + ")[0]) || n.split(" + ").some(part=>part.length>5&&t.includes(part.toLowerCase())));
+  });
+  return p?.img||"";
+}
+function placeEmojiForItem(title,icon){return icon||"📍"}
+function toggleAtividade(di,ii){
+  const it=state.itinerary[di].items[ii];
+  if(itemDone(it)){
+    if(!confirm("Marcar este item como não realizado? O gasto registrado nele também será removido."))return;
+    it[6]=false;it[7]=null;save();return;
+  }
+  abrirRegistroVisita(di,ii);
+}
+function abrirRegistroVisita(di,ii){
+  const it=state.itinerary[di].items[ii];
+  const existing=it[7]||{};
+  const currentARS=Number(existing.ars)||0;
+  const image=placeImageForItem(it[2]);
+  modal("Marcar como realizado",`
+    ${image?`<div class="visit-photo" style="background-image:url('${image}')"></div>`:""}
+    <div class="eyebrow">${state.itinerary[di].label}</div>
+    <h3 style="margin:4px 0 5px">${it[1]} ${it[2]}</h3>
+    <div class="sub">Você foi a este lugar. Registre quanto gastou para que o painel converta o valor para reais.</div>
+    <div class="formgrid" style="margin-top:14px">
+      <div class="field"><label>Quanto gastou? (ARS)</label><input id="visitArs" type="number" min="0" step="1" value="${currentARS||""}" oninput="atualizarConversaoVisita()" placeholder="0 se foi gratuito"></div>
+      <div class="field"><label>Forma de pagamento</label><select id="visitPayment" onchange="atualizarParcelamentoVisita()"><option value="cash">À vista</option><option value="card">Cartão</option></select></div>
+    </div>
+    <div id="visitInstallmentsBox" class="installment-box">
+      <div class="payment-grid">
+        <div class="field"><label>Parcelas</label><select id="visitInstallments" onchange="atualizarParcelamentoVisita()"><option value="1">1x</option><option value="2">2x</option><option value="3">3x</option><option value="4">4x</option><option value="5">5x</option><option value="6">6x</option><option value="7">7x</option><option value="8">8x</option><option value="9">9x</option><option value="10">10x</option><option value="11">11x</option><option value="12">12x</option></select></div>
+        <div class="field"><label>Juros</label><select id="visitInterest" onchange="atualizarParcelamentoVisita()"><option value="false">Sem juros</option><option value="true">Com juros</option></select></div>
+      </div>
+      <div class="field"><label>Valor de cada parcela (ARS)</label><input id="visitInstallmentValue" type="number" step="0.01" readonly></div>
+      <div id="visitPaymentHelp" class="payment-summary"></div>
+    </div>
+    <div class="visit-box"><div>💱 Câmbio usado: <strong>ARS 1.000 ≈ ${money(state.fx)}</strong></div><div id="visitBrlPreview" style="margin-top:4px">ARS ${currentARS?ars(currentARS):"0"} ≈ <strong>${money(currentARS*state.fx/1000)}</strong></div></div>
+    <button class="btn" onclick="salvarRegistroVisita(${di},${ii})" style="margin-top:12px">✓ Fui e salvar gasto</button>
+  `);
+  atualizarParcelamentoVisita();
+  if(existing.payment){
+    visitPayment.value=existing.payment.type||"cash";
+    visitInstallments.value=existing.payment.installments||1;
+    visitInterest.value=String(!!existing.payment.interest);
+    visitInstallmentValue.value=existing.payment.installmentValue||"";
+    atualizarParcelamentoVisita();
+  }
+}
+function atualizarConversaoVisita(){
+  const a=Number(document.getElementById("visitArs")?.value)||0;
+  const el=document.getElementById("visitBrlPreview");
+  if(el)el.innerHTML=`ARS ${ars(a)} ≈ <strong>${money(a*state.fx/1000)}</strong>`;
+  atualizarParcelamentoVisita();
+}
+function atualizarParcelamentoVisita(){
+  const type=document.getElementById("visitPayment")?.value||"cash";
+  const box=document.getElementById("visitInstallmentsBox");
+  if(!box)return;
+  box.classList.toggle("show",type==="card");
+  if(type!=="card")return;
+  const n=Number(document.getElementById("visitInstallments").value)||1;
+  const total=Number(document.getElementById("visitArs").value)||0;
+  const interest=document.getElementById("visitInterest").value==="true";
+  const out=document.getElementById("visitInstallmentValue");
+  if(!interest){
+    out.value=total?(total/n).toFixed(2):"";out.readOnly=true;
+    document.getElementById("visitPaymentHelp").innerHTML=total?`Sem juros: <strong>${ars(total/n)} ARS</strong> por parcela.`:"Informe o gasto para calcular.";
+  }else{
+    out.readOnly=false;
+    document.getElementById("visitPaymentHelp").textContent="Com juros: informe o valor real de cada parcela em ARS.";
+  }
+}
+function salvarRegistroVisita(di,ii){
+  const it=state.itinerary[di].items[ii];
+  const arsSpent=Number(document.getElementById("visitArs").value);
+  if(!Number.isFinite(arsSpent)||arsSpent<0){alert("Informe um valor em ARS. Use 0 se o passeio foi gratuito.");return}
+  const type=document.getElementById("visitPayment").value;
+  const installments=type==="card"?Number(document.getElementById("visitInstallments").value)||1:1;
+  const interest=type==="card"&&document.getElementById("visitInterest").value==="true";
+  const installmentValue=type==="card"?(interest?Number(document.getElementById("visitInstallmentValue").value)||0:arsSpent/installments):arsSpent;
+  if(type==="card"&&interest&&!installmentValue){alert("Informe o valor de cada parcela quando houver juros.");return}
+  it[6]=true;
+  it[7]={ars:arsSpent,brl:arsSpent*state.fx/1000,fx:state.fx,payment:{type,installments,interest,installmentValue}};
+  fecharModal();save();
+}
+function excluirAtividade(di,ii){if(!confirm("Excluir esta atividade do roteiro?"))return;state.itinerary[di].items.splice(ii,1);save()}
+function editarAtividade(di,ii){
+  const it=state.itinerary[di].items[ii];
+  modal("Editar atividade",`
+    <div class="formgrid">
+      <div class="field"><label>Data</label><input id="aDate" type="date" value="${state.itinerary[di].date}"></div>
+      <div class="field"><label>Horário</label><input id="aTime" type="time" value="${it[0]&&it[0]!=="—"?it[0]:""}"></div>
+      <div class="field"><label>Atividade</label><input id="aTitle" value="${String(it[2]||"").replace(/"/g,'&quot;')}"></div>
+      <div class="field"><label>Tipo</label><select id="aType">${["Passeio","Alimentação","Transporte","Compras","Hospedagem","Outro"].map(x=>`<option ${x===it[3]?"selected":""}>${x}</option>`).join("")}</select></div>
+      <div class="field"><label>Descrição / observação</label><input id="aDesc" value="${String(it[4]||"").replace(/"/g,'&quot;')}"></div>
+      <div class="field"><label>Custo / referência</label><input id="aCost" value="${String(it[5]||"").replace(/"/g,'&quot;')}"></div>
+    </div>
+    <button class="btn" onclick="salvarEdicaoAtividade(${di},${ii})">Salvar alterações</button>
+  `);
+}
+function salvarEdicaoAtividade(di,ii){
+  const targetDate=aDate.value;
+  const day=state.itinerary.find(x=>x.date===targetDate);
+  if(!day||!aTitle.value.trim()){alert("Escolha uma data do roteiro e informe a atividade.");return}
+  const oldDone=state.itinerary[di].items[ii][6];
+  const oldVisit=state.itinerary[di].items[ii][7]||null;
+  state.itinerary[di].items.splice(ii,1);
+  const newItem=[aTime.value||"—","•",aTitle.value.trim(),aType.value,aDesc.value.trim(),aCost.value.trim()||"A confirmar",oldDone,oldVisit];
+  day.items.push(newItem);
+  day.items.sort((a,b)=>(a[0]||"99:99").localeCompare(b[0]||"99:99"));
+  fecharModal();save();
+}
+function renderItinerary(){
+  const box=document.getElementById("itinerary");
+  const totalItems=state.itinerary.reduce((n,d)=>n+d.items.length,0);
+  const doneItems=state.itinerary.reduce((n,d)=>n+d.items.filter(itemDone).length,0);
+  const daysDone=state.itinerary.filter(d=>d.items.length&&d.items.every(itemDone)).length;
+  const spent=state.itinerary.reduce((n,d)=>n+d.items.reduce((s,it)=>s+(Number(it[7]?.brl)||0),0),0);
+  document.getElementById("itineraryOverview").innerHTML=`
+    <div class="overview-card"><div class="ov-label">Viagem</div><div class="ov-value">10 dias</div><div class="ov-sub">08 → 17 de fevereiro · 2 viajantes</div></div>
+    <div class="overview-card"><div class="ov-label">Atividades</div><div class="ov-value">${doneItems}/${totalItems}</div><div class="ov-sub">${totalItems?Math.round(doneItems/totalItems*100):0}% realizadas</div></div>
+    <div class="overview-card"><div class="ov-label">Dias fechados</div><div class="ov-value">${daysDone}/10</div><div class="ov-sub">todos os itens marcados</div></div>
+    <div class="overview-card"><div class="ov-label">Gasto registrado</div><div class="ov-value">${money(spent)}</div><div class="ov-sub">passeios e atividades marcados</div></div>`;
+
+  box.innerHTML=state.itinerary.map((d,di)=>{
+    const done=d.items.filter(itemDone).length;
+    const daySpent=d.items.reduce((n,it)=>n+(Number(it[7]?.brl)||0),0);
+    return `<div class="card day-card" style="margin-bottom:16px">
+      <div class="day-head">
+        <div><div class="day-number">${d.label}</div><h2 style="margin:4px 0 0">${d.title}</h2><div class="day-region">📍 ${diaRegiao(d)}</div></div>
+        <div style="text-align:right"><span class="badge">${done}/${d.items.length} realizadas</span><div class="kpi-label" style="margin-top:6px">${daySpent?`Gasto: ${money(daySpent)}`:`${d.items.length} paradas`}</div></div>
+      </div>
+      <div class="timeline">${d.items.map((it,ii)=>{
+        const img=placeImageForItem(it[2]);
+        const visit=it[7];
+        return `<div class="timeline-row">
+          <div class="timeline-time">${it[0]}</div>
+          <div class="timeline-content ${itemDone(it)?"is-done":""}">
+            <div class="itinerary-item-card">
+              <div class="itinerary-thumb">${img?`<img src="${img}" alt="Foto de ${String(it[2]).replace(/"/g,'&quot;')}" loading="lazy">`:placeEmojiForItem(it[2],it[1])}</div>
+              <div>
+                <div class="row"><div class="timeline-title">${it[1]} ${it[2]}</div><span class="badge">${it[3]}</span></div>
+                <div class="timeline-meta">${it[4]||"Sem observação"}</div>
+                <div class="timeline-price">${it[5]||"A confirmar"}</div>
+                ${visit?`<div class="visit-box"><div><strong>✓ Realizado</strong> · ${ars(visit.ars)} ARS ≈ <strong>${money(visit.brl)}</strong></div><div style="margin-top:3px">${paymentLabel({payment:visit.payment})} · câmbio registrado: ${money(visit.fx)}/ARS 1.000</div></div>`:""}
+              </div>
+            </div>
+            <div class="visit-actions">
+              <input class="visit-check" type="checkbox" ${itemDone(it)?"checked":""} onchange="toggleAtividade(${di},${ii})" title="Marcar se você foi">
+              <span class="kpi-label">${itemDone(it)?"Fui · gasto registrado":"Não fui / pendente"}</span>
+              <span style="flex:1"></span>
+              <button class="btn ghost small" onclick="editarAtividade(${di},${ii})">Editar</button>
+              <button class="btn danger small" onclick="excluirAtividade(${di},${ii})">Excluir</button>
+            </div>
+          </div>
+        </div>`;
+      }).join("")}</div>
+    </div>`;
+  }).join("");
+
+  document.getElementById("homeDays").innerHTML=state.itinerary.slice(0,4).map(d=>{
+    const done=d.items.filter(itemDone).length;
+    return `<div class="item"><div class="row"><div><strong>${d.label}</strong><div>${d.title}</div><div class="kpi-label">${diaRegiao(d)}</div></div><span class="badge">${done}/${d.items.length}</span></div></div>`
+  }).join("");
+}
+function adicionarAtividade(){
+  modal("Adicionar atividade",`
+    <div class="formgrid">
+      <div class="field"><label>Data</label><select id="aDate">${state.itinerary.map(d=>`<option value="${d.date}">${d.label} · ${d.title}</option>`).join("")}</select></div>
+      <div class="field"><label>Horário</label><input id="aTime" type="time"></div>
+      <div class="field"><label>Atividade</label><input id="aTitle" placeholder="Ex.: pôr do sol em Puerto Madero"></div>
+      <div class="field"><label>Tipo</label><select id="aType"><option>Passeio</option><option>Alimentação</option><option>Transporte</option><option>Compras</option><option>Hospedagem</option><option>Outro</option></select></div>
+      <div class="field"><label>Descrição / observação</label><input id="aDesc" placeholder="Ex.: reservar antes, se necessário"></div>
+      <div class="field"><label>Custo / referência</label><input id="aCost" placeholder="Ex.: Grátis ou R$ 80 / 2"></div>
+    </div>
+    <button class="btn" onclick="salvarAtividade()">Adicionar ao roteiro</button>
+  `)
+}
+function salvarAtividade(){
+  const d=aDate.value; const day=state.itinerary.find(x=>x.date===d);
+  if(!day||!aTitle.value.trim()){alert("Escolha uma data do roteiro e informe a atividade.");return}
+  day.items.push([aTime.value||"—","•",aTitle.value.trim(),aType.value,aDesc.value.trim()||"Adicionado por você",aCost.value.trim()||"A confirmar",false]);
+  day.items.sort((a,b)=>(a[0]||"99:99").localeCompare(b[0]||"99:99"));
+  fecharModal();save()
+}
+
+/* Passeios */
+function renderPlaces(){
+  const filters=["Todos","Centro","Recoleta","Palermo","La Boca","San Telmo","Puerto Madero","Tigre"];
+  const current=state.placeFilter||"Todos";
+  document.getElementById("placeFilters").innerHTML=filters.map(f=>`<button class="filter-btn ${current===f?"active":""}" onclick="setPlaceFilter('${f}')">${f}</button>`).join("");
+  const visible=state.places.filter(p=>current==="Todos"||p.area.includes(current));
+  document.getElementById("places").innerHTML=visible.map(p=>`
+    <div class="card place-card">
+      <div class="place-img" style="background-image:url('${p.img}')"></div>
+      <div class="eyebrow">${p.area}</div>
+      <h3>${p.name}</h3>
+      <div class="place-info"><span class="badge">🕐 ${p.hours}</span><span class="badge ${p.priceBRL===0?"free":"cost"}">💰 ${p.priceText}</span></div>
+      <div class="place-desc">${p.desc}</div>
+      <div class="place-footer"><span class="place-fit">${p.fit||"Boa opção para o roteiro"}</span><span class="badge">${p.duration||"1–2h"}</span></div>
+      <div class="source-note">Imagem: ${p.source}</div>
+    </div>`).join("");
+}
+function setPlaceFilter(f){state.placeFilter=f;localStorage.setItem(KEY,JSON.stringify(state));renderPlaces()}
+
+/* Restaurantes */
+function renderRestaurants(){
+  document.getElementById("restaurants").innerHTML=state.restaurants.map(r=>{
+    const arsPrice=Number(r.priceARS)||0;
+    const brlPrice=arsPrice&&state.fx?arsPrice*state.fx/1000:Number(r.price)||0;
+    return `<div class="card restaurant-card">
+      <div class="eyebrow">${r.area||"Buenos Aires"}</div><h3>${r.name}</h3>
+      <p class="sub">${r.desc||""}</p>
+      <div class="place-info"><span class="badge cost">≈ ARS ${ars(arsPrice)} / pessoa</span><span class="badge">≈ ${money(brlPrice)} / pessoa</span></div>
+      <div class="restaurant-links">
+        ${r.instagram?`<a class="btn alt small" href="${r.instagram}" target="_blank" rel="noopener">Instagram ↗</a>`:""}
+        ${r.link?`<a class="btn alt small" href="${r.link}" target="_blank" rel="noopener">Site ↗</a>`:""}
+      </div>
+    </div>`;
+  }).join("");
+}
+function adicionarRestaurante(){
+  modal("Adicionar restaurante",`
+    <div class="formgrid">
+      <div class="field"><label>Nome</label><input id="rName"></div>
+      <div class="field"><label>Bairro</label><input id="rArea"></div>
+      <div class="field"><label>Preço médio por pessoa (ARS)</label><input id="rPrice" type="number"></div>
+      <div class="field"><label>Instagram</label><input id="rInstagram" placeholder="https://www.instagram.com/.../"></div>
+      <div class="field"><label>Site</label><input id="rLink" placeholder="https://..."></div></div>
+    </div>
+    <div class="field"><label>Descrição</label><textarea id="rDesc" rows="4"></textarea></div>
+    <button class="btn" onclick="salvarRestaurante()">Salvar restaurante</button>
+  `)
+}
+function salvarRestaurante(){
+  if(!rName.value.trim())return;
+  state.restaurants.push({name:rName.value.trim(),area:rArea.value,priceARS:Number(rPrice.value)||0,desc:rDesc.value,instagram:rInstagram.value,link:rLink.value});
+  fecharModal();save()
+}
+
+function atualizarPagamentoAba(kind){
+  const cap=kind==='flights'?'Flights':'Airbnb';
+  const value=Number(document.getElementById(`pay${cap}Value`)?.value)||0;
+  const type=document.getElementById(`pay${cap}Type`)?.value||'cash';
+  const cardBox=document.getElementById(`pay${cap}Card`);
+  const result=document.getElementById(`pay${cap}Result`);
+  const installments=Number(document.getElementById(`pay${cap}Installments`)?.value)||1;
+  const interest=document.getElementById(`pay${cap}Interest`)?.value==='true';
+  const installment=document.getElementById(`pay${cap}Installment`)?.value;
+  const finalInput=document.getElementById(`pay${cap}Final`);
+  const help=document.getElementById(`pay${cap}Help`);
+  if(cardBox)cardBox.classList.toggle('show',type==='card');
+  if(type!=='card'){
+    if(finalInput)finalInput.value=value?value.toFixed(2):'';
+    if(result)result.innerHTML=value?`<strong>À vista:</strong> ${money(value)} pagos de uma vez.`:'Informe o valor da compra.';
+    return;
+  }
+  let parc=0,total=value;
+  if(!interest){
+    parc=value/installments;
+    const input=document.getElementById(`pay${cap}Installment`);
+    if(input){input.value=value?(parc.toFixed(2)):'';input.readOnly=true;}
+    total=value;
+    if(help)help.innerHTML=value?`Sem juros: <strong>${installments}x de ${money(parc)}</strong>. Total: <strong>${money(total)}</strong>.`:'Informe o valor da compra para calcular.';
+  }else{
+    const input=document.getElementById(`pay${cap}Installment`);
+    if(input)input.readOnly=false;
+    parc=Number(installment)||0;
+    total=parc*installments;
+    if(help)help.innerHTML='Com juros: digite o valor real de cada parcela. O total será parcela × número de parcelas.';
+  }
+  if(finalInput)finalInput.value=total?total.toFixed(2):'';
+  if(result)result.innerHTML=parc?`<strong>Cartão:</strong> ${installments}x de ${money(parc)} · ${interest?'com juros':'sem juros'} · total efetivo ${money(total)}.`:'Informe o valor da compra e a parcela.';
+}
+function salvarPagamentoAba(kind){
+  const cap=kind==='flights'?'Flights':'Airbnb';
+  const value=Number(document.getElementById(`pay${cap}Value`).value)||0;
+  const type=document.getElementById(`pay${cap}Type`).value;
+  if(value<=0){alert('Informe o valor total da compra.');return}
+  const installments=type==='card'?Number(document.getElementById(`pay${cap}Installments`).value)||1:1;
+  const interest=type==='card'&&document.getElementById(`pay${cap}Interest`).value==='true';
+  let installmentValue=type==='card'?(interest?Number(document.getElementById(`pay${cap}Installment`).value)||0:value/installments):value;
+  if(type==='card'&&interest&&installmentValue<=0){alert('Informe o valor de cada parcela quando houver juros.');return}
+  state.costs[kind]=value;
+  state.costPayments[kind]={type,installments,interest,installmentValue};
+  save();
+  renderPayments();
+  alert(`${kind==='flights'?'Passagem':'Airbnb'} salvo com sucesso.`);
+}
+function renderPayments(){
+  ['flights','airbnb'].forEach(kind=>{
+    const cap=kind==='flights'?'Flights':'Airbnb';
+    const value=Number(state.costs[kind])||0;
+    const p=state.costPayments?.[kind]||{type:'cash',installments:1,interest:false,installmentValue:0};
+    const valueInput=document.getElementById(`pay${cap}Value`);
+    const typeInput=document.getElementById(`pay${cap}Type`);
+    if(!valueInput||!typeInput)return;
+    valueInput.value=value||''; typeInput.value=p.type||'cash';
+    if(document.getElementById(`pay${cap}Installments`))document.getElementById(`pay${cap}Installments`).value=Number(p.installments)||1;
+    if(document.getElementById(`pay${cap}Interest`))document.getElementById(`pay${cap}Interest`).value=String(!!p.interest);
+    const iv=document.getElementById(`pay${cap}Installment`);
+    if(iv)iv.value=p.installmentValue||'';
+    atualizarPagamentoAba(kind);
+  });
+  const box=document.getElementById('paymentsOverview');
+  if(!box)return;
+  box.innerHTML=['flights','airbnb'].map(kind=>{
+    const label=kind==='flights'?'✈️ Passagens':'🏠 Airbnb';
+    const base=Number(state.costs[kind])||0;
+    const p=state.costPayments?.[kind]||{};
+    const desc=base?(p.type==='card'?`${p.installments||1}x ${p.interest?'com juros':'sem juros'} · ${money(p.installmentValue||base/(p.installments||1))}/parcela · total ${money(costEffective(kind))}`:`À vista · ${money(base)}`):'Ainda não preenchido';
+    return `<div class="cost-row"><div><div class="cost-name">${label}</div><div class="kpi-label">${desc}</div></div><div class="cost-value">${base?money(costEffective(kind)):'—'}</div></div>`;
+  }).join('');
+}
+
+/* Checklist */
+function renderChecklist(){
+  const done=state.checklist.filter(x=>x.done).length, pct=state.checklist.length?done/state.checklist.length*100:0;
+  document.getElementById("checkProgress").style.width=pct+"%";
+  document.getElementById("checkText").textContent=`${done} de ${state.checklist.length} concluídos · ${Math.round(pct)}%`;
+  document.getElementById("checklistItems").innerHTML=state.checklist.map(x=>`
+    <div class="item ${x.done?"done":""}"><div class="item-row"><input class="check" type="checkbox" ${x.done?"checked":""} onchange="toggleCheck(${x.id})"><div style="flex:1">${x.text}</div><button class="btn danger small" onclick="delCheck(${x.id})">Excluir</button></div></div>`).join("");
+}
+function toggleCheck(id){const x=state.checklist.find(x=>x.id===id);x.done=!x.done;save()}
+function delCheck(id){state.checklist=state.checklist.filter(x=>x.id!==id);save()}
+function adicionarChecklist(){const t=prompt("Qual item deseja adicionar?");if(t?.trim()){state.checklist.push({id:Date.now(),text:t.trim(),done:false});save()}}
+
+/* Config */
+function carregarConfig(){
+  cfgFlights.value=state.costs.flights||"";
+  cfgAirbnb.value=state.costs.airbnb||"";
+  cfgRoad.value=state.costs.road||"";
+  cfgFozHotel.value=state.costs.fozHotel||"";
+  cfgLocalTransport.value=state.costs.localTransport||"";
+  cfgFood.value=state.costs.food||"";
+  cfgAttractions.value=state.costs.attractions||"";
+  cfgInsurance.value=state.costs.insurance||"";
+  cfgMisc.value=state.costs.misc||"";
+  cfgNotes.value=state.notes||"";
+  ["flights","airbnb"].forEach(k=>{
+    const p=state.costPayments[k]||{};
+    document.getElementById(`cfg${k==="flights"?"Flights":"Airbnb"}Payment`).value=p.type||"cash";
+    document.getElementById(`cfg${k==="flights"?"Flights":"Airbnb"}Installments`).value=Number(p.installments)||1;
+    document.getElementById(`cfg${k==="flights"?"Flights":"Airbnb"}Interest`).value=String(!!p.interest);
+    document.getElementById(`cfg${k==="flights"?"Flights":"Airbnb"}InstallmentValue`).value=p.installmentValue||"";
+    atualizarPagamentoPrincipal(k);
+  });
+}
+function atualizarPagamentoPrincipal(kind){
+  const cap=kind==="flights"?"Flights":"Airbnb";
+  const type=document.getElementById(`cfg${cap}Payment`)?.value||"cash";
+  const n=Number(document.getElementById(`cfg${cap}Installments`)?.value)||1;
+  const base=Number(document.getElementById(kind==="flights"?"cfgFlights":"cfgAirbnb")?.value)||0;
+  const interest=document.getElementById(`cfg${cap}Interest`)?.value==="true";
+  const out=document.getElementById(`cfg${cap}InstallmentValue`);
+  const help=document.getElementById(`cfg${cap}PaymentHelp`);
+  const card=type==="card";
+  document.getElementById(`cfg${cap}Installments`).disabled=!card;
+  document.getElementById(`cfg${cap}Interest`).disabled=!card;
+  out.readOnly=!card||!interest;
+  if(!card){out.value="";help.innerHTML="Pagamento à vista. O valor informado é o valor efetivamente pago.";return}
+  if(!interest){
+    out.value=base&&n?(base/n).toFixed(2):"";
+    help.innerHTML=base?`Sem juros: <strong>${n}x de ${money(base/n)}</strong> · total ${money(base)}.`:"Informe o valor da compra para calcular as parcelas.";
+  }else{
+    help.innerHTML="Com juros: informe o valor real de cada parcela. O total final será parcela × número de parcelas.";
+  }
+}
+function salvarConfig(){
+  state.costs.flights=Number(cfgFlights.value)||0;
+  state.costs.airbnb=Number(cfgAirbnb.value)||0;
+  state.costs.road=Number(cfgRoad.value)||0;
+  state.costs.fozHotel=Number(cfgFozHotel.value)||0;
+  state.costs.localTransport=Number(cfgLocalTransport.value)||0;
+  state.costs.food=Number(cfgFood.value)||0;
+  state.costs.attractions=Number(cfgAttractions.value)||0;
+  state.costs.insurance=Number(cfgInsurance.value)||0;
+  state.costs.misc=Number(cfgMisc.value)||0;
+  ["flights","airbnb"].forEach(k=>{
+    const cap=k==="flights"?"Flights":"Airbnb";
+    const type=document.getElementById(`cfg${cap}Payment`).value;
+    const installments=Number(document.getElementById(`cfg${cap}Installments`).value)||1;
+    const interest=document.getElementById(`cfg${cap}Interest`).value==="true";
+    const base=Number(document.getElementById(k==="flights"?"cfgFlights":"cfgAirbnb").value)||0;
+    let installmentValue=0;
+    if(type==="card") installmentValue=interest?Number(document.getElementById(`cfg${cap}InstallmentValue`).value)||0:(base/installments);
+    state.costPayments[k]={type,installments,interest,installmentValue};
+  });
+  save();alert("Valores e formas de pagamento salvos.")
+}
+function salvarNotas(){state.notes=cfgNotes.value;save();alert("Observações salvas.")}
+
+/* Render */
+function render(){
+  renderBudget();renderExpenses();renderItinerary();renderPlaces();renderRestaurants();renderChecklist();carregarConfig();renderPayments();
+  converter();
+}
+verificarLogin();
+render();
+atualizarCambio();
+</script>
+</body>
+</html>
