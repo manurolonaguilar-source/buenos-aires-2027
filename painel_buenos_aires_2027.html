@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Buenos Aires 2027 • Painel da Viagem</title>
+<style>
+:root{
+  --bg:#f5f3f0;--card:#fff;--ink:#242321;--muted:#77736d;
+  --accent:#b98b68;--accent2:#ead9ca;--line:#e8e2dc;
+  --dark:#242321;--green:#667c6a;--danger:#b45e58;
+}
+*{box-sizing:border-box} body{margin:0;font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+button,input,textarea,select{font:inherit} button{cursor:pointer}
+.app{display:flex;min-height:100vh}.sidebar{width:245px;background:var(--dark);color:#fff;padding:28px 18px;position:fixed;inset:0 auto 0 0}
+.logo{font-size:21px;font-weight:800;padding:0 12px 28px}.logo span{color:#d8b394}
+.nav button{display:block;width:100%;text-align:left;background:none;border:0;color:#cfcac4;padding:13px 14px;border-radius:10px;margin:4px 0}
+.nav button.active,.nav button:hover{background:#3a3835;color:#fff}
+.main{margin-left:245px;width:calc(100% - 245px);padding:30px;max-width:1500px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px}.eyebrow{color:var(--accent);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px}
+h1{font-size:34px;margin:4px 0} h2{margin:0 0 18px} h3{margin:0 0 7px}.sub{color:var(--muted)}
+.btn{border:0;border-radius:10px;padding:11px 16px;background:var(--dark);color:#fff}.btn.alt{background:var(--accent2);color:var(--ink)}.btn.danger{background:#f3d8d5;color:#813e39}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:19px;box-shadow:0 4px 18px #00000006}
+.stat .value{font-size:28px;font-weight:800;margin-top:8px}.stat small{color:var(--muted)}
+.section{display:none}.section.active{display:block}.hero{background:linear-gradient(135deg,#302e2b,#5b4d42);color:#fff;border-radius:20px;padding:28px;margin-bottom:18px}
+.hero .route{margin-top:20px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}.pill{padding:7px 11px;border-radius:999px;background:#ffffff18;border:1px solid #ffffff25;font-size:13px}
+.row{display:flex;gap:12px;align-items:center;justify-content:space-between}.actions{display:flex;gap:8px;flex-wrap:wrap}.two{display:grid;grid-template-columns:1.5fr 1fr;gap:18px;margin-top:18px}
+.list{display:flex;flex-direction:column;gap:10px}.item{border:1px solid var(--line);border-radius:12px;padding:14px;background:#fff}.item.done{opacity:.55;text-decoration:line-through}
+input,textarea,select{width:100%;border:1px solid var(--line);border-radius:9px;padding:10px;background:#fff;outline:none}input:focus,textarea:focus,select:focus{border-color:var(--accent)}
+label{display:block;font-size:12px;font-weight:700;margin:0 0 6px;color:#555}.field{margin-bottom:12px}
+.formgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.formgrid.three{grid-template-columns:repeat(3,1fr)}
+.modal{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;padding:20px;z-index:10}.modal.open{display:flex}.modalbox{background:#fff;border-radius:18px;padding:22px;width:min(680px,100%);max-height:90vh;overflow:auto}
+.thumb{height:150px;border-radius:12px;background:#eee center/cover no-repeat;margin-bottom:13px}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.progress{height:9px;background:#eee;border-radius:99px;overflow:hidden}.progress>i{display:block;height:100%;background:var(--accent);width:0}
+table{width:100%;border-collapse:collapse}th,td{padding:11px;border-bottom:1px solid var(--line);text-align:left;font-size:13px}th{color:#777;font-size:11px;text-transform:uppercase}
+.empty{padding:35px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:14px}
+.notice{background:#f1e8e0;border:1px solid #e5d4c5;padding:13px;border-radius:11px;color:#63554b;font-size:13px;margin-bottom:15px}
+@media(max-width:900px){.sidebar{width:75px}.logo{font-size:0}.logo span{font-size:18px}.nav button{font-size:0;text-align:center}.nav button:before{content:"•";font-size:20px}.main{margin-left:75px;width:calc(100% - 75px);padding:18px}.grid,.cards{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}}
+@media(max-width:600px){.grid,.cards,.formgrid,.formgrid.three{grid-template-columns:1fr}.main{padding:12px}h1{font-size:27px}.top{align-items:flex-start;gap:10px;flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="logo">Buenos Aires <span>2027</span></div>
+  <nav class="nav">
+    <button class="active" onclick="show('inicio',this)">Início</button>
+    <button onclick="show('roteiro',this)">Roteiro</button>
+    <button onclick="show('passeios',this)">Passeios</button>
+    <button onclick="show('restaurantes',this)">Restaurantes</button>
+    <button onclick="show('gastos',this)">Gastos & câmbio</button>
+    <button onclick="show('checklist',this)">Checklist</button>
+    <button onclick="show('config',this)">Configurações</button>
+  </nav>
+</aside>
+
+<main class="main">
+<section id="inicio" class="section active">
+ <div class="top"><div><div class="eyebrow">Painel da viagem</div><h1 id="dashTitle">Buenos Aires 2027</h1><div class="sub" id="dashDates">08/02/2027 → 17/02/2027 • 2 viajantes</div></div><button class="btn" onclick="show('config')">Editar viagem</button></div>
+ <div class="hero"><div class="eyebrow" style="color:#d9b79b">ARGENTINA</div><h2 style="margin:7px 0 0">Buenos Aires</h2><div class="route"><span class="pill">🚗 Dourados</span><span>→</span><span class="pill">✈️ Foz do Iguaçu</span><span>→</span><span class="pill">🇦🇷 Buenos Aires</span></div></div>
+ <div class="grid">
+  <div class="card stat"><small>Gastos registrados</small><div class="value" id="statSpend">R$ 0,00</div></div>
+  <div class="card stat"><small>Passeios concluídos</small><div class="value" id="statActivities">0</div></div>
+  <div class="card stat"><small>Checklist</small><div class="value" id="statChecklist">0%</div></div>
+  <div class="card stat"><small>Câmbio manual</small><div class="value" id="statFx">R$ 0,00</div><small>por ARS 1.000</small></div>
+ </div>
+ <div class="two">
+  <div class="card"><div class="row"><h2>Próximos itens</h2><button class="btn alt" onclick="show('roteiro')">Ver roteiro</button></div><div id="nextItems" class="list"></div></div>
+  <div class="card"><h2>Checklist da viagem</h2><div class="progress"><i id="checkProgress"></i></div><p class="sub" id="checkText">0 de 0 concluídos</p><button class="btn" onclick="show('checklist')">Abrir checklist</button></div>
+ </div>
+</section>
+
+<section id="roteiro" class="section">
+ <div class="top"><div><div class="eyebrow">Planejamento diário</div><h1>Roteiro</h1><div class="sub">Monte os dias da viagem e marque o que já foi feito.</div></div><button class="btn" onclick="openActivity()">+ Adicionar atividade</button></div>
+ <div id="itinerary" class="list"></div>
+</section>
+
+<section id="passeios" class="section">
+ <div class="top"><div><div class="eyebrow">O que fazer</div><h1>Passeios</h1><div class="sub">Salve lugares, informações e jogue direto no roteiro.</div></div><button class="btn" onclick="openPlace()">+ Adicionar passeio</button></div>
+ <div id="places" class="cards"></div>
+</section>
+
+<section id="restaurantes" class="section">
+ <div class="top"><div><div class="eyebrow">Onde comer</div><h1>Restaurantes</h1><div class="sub">Organize favoritos, preços e links.</div></div><button class="btn" onclick="openRestaurant()">+ Adicionar restaurante</button></div>
+ <div id="restaurants" class="cards"></div>
+</section>
+
+<section id="gastos" class="section">
+ <div class="top"><div><div class="eyebrow">Orçamento</div><h1>Gastos & câmbio</h1></div><button class="btn" onclick="openExpense()">+ Registrar gasto</button></div>
+ <div class="notice">O câmbio abaixo é manual por enquanto. A estrutura já deixa o painel pronto para uma futura integração com Firebase e atualização diária.</div>
+ <div class="grid">
+  <div class="card stat"><small>Orçamento total</small><div class="value" id="budgetView">R$ 0,00</div></div>
+  <div class="card stat"><small>Total gasto</small><div class="value" id="totalView">R$ 0,00</div></div>
+  <div class="card stat"><small>Restante</small><div class="value" id="remainingView">R$ 0,00</div></div>
+  <div class="card"><label>Câmbio: BRL por ARS 1.000</label><input id="fxInput" type="number" step="0.01" onchange="setFx(this.value)"><small class="sub">Ex.: 5,80 significa ARS 1.000 = R$ 5,80</small></div>
+ </div>
+ <div class="card" style="margin-top:18px"><h2>Despesas</h2><div id="expenseTable"></div></div>
+</section>
+
+<section id="checklist" class="section">
+ <div class="top"><div><div class="eyebrow">Preparação</div><h1>Checklist</h1></div><button class="btn" onclick="addChecklist()">+ Adicionar item</button></div>
+ <div class="card"><div id="checklistItems" class="list"></div></div>
+</section>
+
+<section id="config" class="section">
+ <div class="top"><div><div class="eyebrow">Preferências</div><h1>Configurações</h1></div></div>
+ <div class="card">
+  <div class="formgrid">
+   <div class="field"><label>Nome da viagem</label><input id="cfgTitle"></div>
+   <div class="field"><label>Número de viajantes</label><input id="cfgPeople" type="number"></div>
+   <div class="field"><label>Data de ida</label><input id="cfgStart" type="date"></div>
+   <div class="field"><label>Data de volta</label><input id="cfgEnd" type="date"></div>
+   <div class="field"><label>Orçamento total (R$)</label><input id="cfgBudget" type="number" step="0.01"></div>
+  </div>
+  <div class="field"><label>Observações</label><textarea id="cfgNotes" rows="5"></textarea></div>
+  <button class="btn" onclick="saveConfig()">Salvar alterações</button>
+ </div>
+</section>
+</main>
+</div>
+
+<div class="modal" id="modal"><div class="modalbox"><div class="row"><h2 id="modalTitle">Adicionar</h2><button class="btn alt" onclick="closeModal()">Fechar</button></div><div id="modalBody"></div></div></div>
+
+<script>
+const KEY='ba2027_panel_v1';
+const defaultState={
+ config:{title:'Buenos Aires 2027',people:2,start:'2027-02-08',end:'2027-02-17',budget:0,notes:''},
+ fx:0,
+ activities:[
+  {id:1,date:'2027-02-08',time:'',title:'Dourados → Foz do Iguaçu',type:'Transporte',done:false},
+  {id:2,date:'2027-02-08',time:'',title:'Voo Foz do Iguaçu → Buenos Aires',type:'Transporte',done:false},
+  {id:3,date:'2027-02-08',time:'',title:'Check-in no Airbnb',type:'Hospedagem',done:false}
+ ],
+ places:[
+  {id:1,name:'Caminito',area:'La Boca',price:'A confirmar',hours:'A confirmar',desc:'Rua-museu colorida, com arquitetura histórica, arte e movimento no bairro de La Boca.',image:'https://images.unsplash.com/photo-1589909202802-8f4aadce1849?auto=format&fit=crop&w=900&q=80'},
+  {id:2,name:'Cemitério da Recoleta',area:'Recoleta',price:'A confirmar',hours:'A confirmar',desc:'Um dos pontos históricos mais conhecidos de Buenos Aires, com mausoléus e arquitetura monumental.',image:'https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=900&q=80'},
+  {id:3,name:'Puerto Madero',area:'Puerto Madero',price:'Grátis para circular',hours:'Livre',desc:'Região ótima para caminhar, fotografar e conhecer a Puente de la Mujer.',image:'https://images.unsplash.com/photo-1590537848327-1b8f5f4f6a72?auto=format&fit=crop&w=900&q=80'},
+  {id:4,name:'El Ateneo Grand Splendid',area:'Recoleta',price:'Grátis',hours:'A confirmar',desc:'Livraria instalada em um antigo teatro, um dos lugares mais bonitos para visitar na cidade.',image:'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=900&q=80'}
+ ],
+ restaurants:[],
+ expenses:[],
+ checklist:[
+  {id:1,text:'Conferir passagens e bagagem',done:false},
+  {id:2,text:'Confirmar hospedagem',done:false},
+  {id:3,text:'Pesquisar seguro viagem',done:false},
+  {id:4,text:'Definir orçamento diário',done:false},
+  {id:5,text:'Verificar documentação necessária',done:false},
+  {id:6,text:'Planejar dinheiro em espécie e cartão',done:false}
+ ]
+};
+let state=JSON.parse(localStorage.getItem(KEY)||'null')||defaultState;
+function save(){localStorage.setItem(KEY,JSON.stringify(state));render()}
+function money(v){return new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(Number(v)||0)}
+function dateBR(d){if(!d)return '';let [y,m,day]=d.split('-');return `${day}/${m}/${y}`}
+function show(id,btn){
+ document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));
+ document.getElementById(id).classList.add('active');
+ document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));
+ if(btn)btn.classList.add('active'); else [...document.querySelectorAll('.nav button')].find(x=>x.textContent.toLowerCase().includes(id==='gastos'?'gastos':id))?.classList.add('active');
+ render();
+}
+function modal(title,body){document.getElementById('modalTitle').textContent=title;document.getElementById('modalBody').innerHTML=body;document.getElementById('modal').classList.add('open')}
+function closeModal(){document.getElementById('modal').classList.remove('open')}
+function openActivity(editId=null){
+ let a=state.activities.find(x=>x.id==editId)||{date:state.config.start,time:'',title:'',type:'Passeio'};
+ modal(editId?'Editar atividade':'Adicionar atividade',`
+ <div class="formgrid">
+  <div class="field"><label>Data</label><input id="aDate" type="date" value="${a.date}"></div>
+  <div class="field"><label>Horário</label><input id="aTime" type="time" value="${a.time}"></div>
+  <div class="field"><label>Título</label><input id="aTitle" value="${a.title}"></div>
+  <div class="field"><label>Tipo</label><select id="aType"><option>Passeio</option><option>Transporte</option><option>Alimentação</option><option>Hospedagem</option><option>Compras</option><option>Outro</option></select></div>
+ </div><button class="btn" onclick="saveActivity(${editId||0})">Salvar</button>`);
+ document.getElementById('aType').value=a.type;
+}
+function saveActivity(id){let o={id:id||Date.now(),date:aDate.value,time:aTime.value,title:aTitle.value.trim(),type:aType.value,done:id?(state.activities.find(x=>x.id==id)?.done||false):false};if(!o.title)return; if(id)state.activities=state.activities.map(x=>x.id==id?o:x);else state.activities.push(o);closeModal();save()}
+function toggleActivity(id){let a=state.activities.find(x=>x.id==id);a.done=!a.done;save()}
+function delActivity(id){state.activities=state.activities.filter(x=>x.id!=id);save()}
+function openPlace(id=null){
+ let p=state.places.find(x=>x.id==id)||{name:'',area:'',price:'',hours:'',desc:'',image:''};
+ modal(id?'Editar passeio':'Adicionar passeio',`
+ <div class="field"><label>Nome</label><input id="pName" value="${p.name}"></div>
+ <div class="formgrid"><div class="field"><label>Bairro/região</label><input id="pArea" value="${p.area}"></div><div class="field"><label>Preço</label><input id="pPrice" value="${p.price}"></div><div class="field"><label>Horário</label><input id="pHours" value="${p.hours}"></div><div class="field"><label>URL da imagem</label><input id="pImage" value="${p.image}"></div></div>
+ <div class="field"><label>Descrição</label><textarea id="pDesc" rows="4">${p.desc}</textarea></div><button class="btn" onclick="savePlace(${id||0})">Salvar</button>`);
+}
+function savePlace(id){let o={id:id||Date.now(),name:pName.value.trim(),area:pArea.value,price:pPrice.value,hours:pHours.value,desc:pDesc.value,image:pImage.value};if(!o.name)return;if(id)state.places=state.places.map(x=>x.id==id?o:x);else state.places.push(o);closeModal();save()}
+function addPlaceToRoute(id){let p=state.places.find(x=>x.id==id);state.activities.push({id:Date.now(),date:state.config.start,time:'',title:p.name,type:'Passeio',done:false});save();show('roteiro')}
+function delPlace(id){state.places=state.places.filter(x=>x.id!=id);save()}
+function openRestaurant(id=null){
+ let r=state.restaurants.find(x=>x.id==id)||{name:'',area:'',price:'',desc:'',instagram:'',site:'',image:''};
+ modal(id?'Editar restaurante':'Adicionar restaurante',`
+ <div class="field"><label>Nome</label><input id="rName" value="${r.name}"></div>
+ <div class="formgrid"><div class="field"><label>Bairro</label><input id="rArea" value="${r.area}"></div><div class="field"><label>Média por pessoa (R$)</label><input id="rPrice" value="${r.price}"></div><div class="field"><label>Instagram</label><input id="rInstagram" value="${r.instagram}"></div><div class="field"><label>Site</label><input id="rSite" value="${r.site}"></div><div class="field"><label>URL da imagem</label><input id="rImage" value="${r.image}"></div></div>
+ <div class="field"><label>Descrição</label><textarea id="rDesc" rows="4">${r.desc}</textarea></div><button class="btn" onclick="saveRestaurant(${id||0})">Salvar</button>`);
+}
+function saveRestaurant(id){let o={id:id||Date.now(),name:rName.value.trim(),area:rArea.value,price:rPrice.value,desc:rDesc.value,instagram:rInstagram.value,site:rSite.value,image:rImage.value};if(!o.name)return;if(id)state.restaurants=state.restaurants.map(x=>x.id==id?o:x);else state.restaurants.push(o);closeModal();save()}
+function addRestaurantToRoute(id){let r=state.restaurants.find(x=>x.id==id);state.activities.push({id:Date.now(),date:state.config.start,time:'',title:'🍽 '+r.name,type:'Alimentação',done:false});save();show('roteiro')}
+function delRestaurant(id){state.restaurants=state.restaurants.filter(x=>x.id!=id);save()}
+function openExpense(){
+ modal('Registrar gasto',`
+ <div class="formgrid"><div class="field"><label>Data</label><input id="eDate" type="date" value="${state.config.start}"></div><div class="field"><label>Descrição</label><input id="eDesc"></div><div class="field"><label>Valor</label><input id="eValue" type="number" step="0.01"></div><div class="field"><label>Moeda</label><select id="eCurrency"><option>BRL</option><option>ARS</option></select></div><div class="field"><label>Categoria</label><select id="eCat"><option>Alimentação</option><option>Passeio</option><option>Transporte</option><option>Compras</option><option>Hospedagem</option><option>Passagem</option><option>Outro</option></select></div></div>
+ <button class="btn" onclick="saveExpense()">Salvar</button>`);
+}
+function saveExpense(){let o={id:Date.now(),date:eDate.value,desc:eDesc.value,value:Number(eValue.value),currency:eCurrency.value,cat:eCat.value};if(!o.desc||!o.value)return;state.expenses.push(o);closeModal();save()}
+function delExpense(id){state.expenses=state.expenses.filter(x=>x.id!=id);save()}
+function setFx(v){state.fx=Number(v);save()}
+function brlExpense(e){if(e.currency==='BRL')return e.value;return state.fx?e.value*state.fx/1000:0}
+function addChecklist(){let t=prompt('Qual item deseja adicionar?');if(t){state.checklist.push({id:Date.now(),text:t,done:false});save()}}
+function toggleCheck(id){let x=state.checklist.find(x=>x.id==id);x.done=!x.done;save()}
+function delCheck(id){state.checklist=state.checklist.filter(x=>x.id!=id);save()}
+function saveConfig(){state.config.title=cfgTitle.value||'Buenos Aires 2027';state.config.people=Number(cfgPeople.value)||2;state.config.start=cfgStart.value;state.config.end=cfgEnd.value;state.config.budget=Number(cfgBudget.value)||0;state.config.notes=cfgNotes.value;save();alert('Configurações salvas!')}
+function render(){
+ document.getElementById('dashTitle').textContent=state.config.title;
+ document.getElementById('dashDates').textContent=`${dateBR(state.config.start)} → ${dateBR(state.config.end)} • ${state.config.people} viajantes`;
+ let total=state.expenses.reduce((s,e)=>s+brlExpense(e),0);
+ document.getElementById('statSpend').textContent=money(total);document.getElementById('statFx').textContent=money(state.fx);
+ let doneA=state.activities.filter(x=>x.done).length;document.getElementById('statActivities').textContent=`${doneA}/${state.activities.length}`;
+ let doneC=state.checklist.filter(x=>x.done).length, pct=state.checklist.length?Math.round(doneC/state.checklist.length*100):0;document.getElementById('statChecklist').textContent=pct+'%';document.getElementById('checkProgress').style.width=pct+'%';document.getElementById('checkText').textContent=`${doneC} de ${state.checklist.length} concluídos`;
+ document.getElementById('nextItems').innerHTML=state.activities.filter(x=>!x.done).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,5).map(a=>`<div class="item"><b>${dateBR(a.date)} ${a.time||''}</b><div>${a.title}</div><small class="sub">${a.type}</small></div>`).join('')||'<div class="empty">Nada pendente por enquanto.</div>';
+ document.getElementById('itinerary').innerHTML=state.activities.sort((a,b)=>a.date.localeCompare(b.date)||a.time.localeCompare(b.time)).map(a=>`<div class="item ${a.done?'done':''}"><div class="row"><div><b>${dateBR(a.date)} ${a.time||''}</b><h3>${a.title}</h3><small class="sub">${a.type}</small></div><div class="actions"><button class="btn alt" onclick="toggleActivity(${a.id})">${a.done?'Desmarcar':'Concluir'}</button><button class="btn alt" onclick="openActivity(${a.id})">Editar</button><button class="btn danger" onclick="delActivity(${a.id})">Excluir</button></div></div></div>`).join('')||'<div class="empty">Seu roteiro ainda está vazio.</div>';
+ document.getElementById('places').innerHTML=state.places.map(p=>`<div class="card"><div class="thumb" style="background-image:url('${p.image||'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80'}')"></div><div class="eyebrow">${p.area||'Buenos Aires'}</div><h3>${p.name}</h3><p class="sub">${p.desc||''}</p><small>🕐 ${p.hours||'A confirmar'} • 💰 ${p.price||'A confirmar'}</small><div class="actions" style="margin-top:13px"><button class="btn" onclick="addPlaceToRoute(${p.id})">+ Roteiro</button><button class="btn alt" onclick="openPlace(${p.id})">Editar</button><button class="btn danger" onclick="delPlace(${p.id})">Excluir</button></div></div>`).join('');
+ document.getElementById('restaurants').innerHTML=state.restaurants.length?state.restaurants.map(r=>`<div class="card"><div class="thumb" style="background-image:url('${r.image||'https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&w=900&q=80'}')"></div><div class="eyebrow">${r.area||'Buenos Aires'}</div><h3>${r.name}</h3><p class="sub">${r.desc||''}</p><b>${r.price?'R$ '+r.price+'/pessoa':'Preço não informado'}</b><p>${r.instagram?`📷 <a href="${r.instagram}" target="_blank">Instagram</a>`:''} ${r.site?` • 🌐 <a href="${r.site}" target="_blank">Site</a>`:''}</p><div class="actions"><button class="btn" onclick="addRestaurantToRoute(${r.id})">+ Roteiro</button><button class="btn alt" onclick="openRestaurant(${r.id})">Editar</button><button class="btn danger" onclick="delRestaurant(${r.id})">Excluir</button></div></div>`).join(''):'<div class="empty" style="grid-column:1/-1">Ainda não há restaurantes salvos. Adicione os seus favoritos.</div>';
+ document.getElementById('expenseTable').innerHTML=state.expenses.length?`<table><thead><tr><th>Data</th><th>Descrição</th><th>Categoria</th><th>Valor</th><th>Convertido</th><th></th></tr></thead><tbody>${state.expenses.sort((a,b)=>a.date.localeCompare(b.date)).map(e=>`<tr><td>${dateBR(e.date)}</td><td>${e.desc}</td><td>${e.cat}</td><td>${e.currency} ${e.value.toLocaleString('pt-BR',{minimumFractionDigits:2})}</td><td>${money(brlExpense(e))}</td><td><button class="btn danger" onclick="delExpense(${e.id})">Excluir</button></td></tr>`).join('')}</tbody></table>`:'<div class="empty">Nenhum gasto registrado.</div>';
+ document.getElementById('budgetView').textContent=money(state.config.budget);document.getElementById('totalView').textContent=money(total);document.getElementById('remainingView').textContent=money(state.config.budget-total);
+ document.getElementById('fxInput').value=state.fx||'';
+ document.getElementById('checklistItems').innerHTML=state.checklist.map(x=>`<div class="item ${x.done?'done':''}"><div class="row"><label style="display:flex;gap:10px;align-items:center;font-size:14px;margin:0"><input style="width:auto" type="checkbox" ${x.done?'checked':''} onchange="toggleCheck(${x.id})"> ${x.text}</label><button class="btn danger" onclick="delCheck(${x.id})">Excluir</button></div></div>`).join('')||'<div class="empty">Checklist vazio.</div>';
+ cfgTitle.value=state.config.title;cfgPeople.value=state.config.people;cfgStart.value=state.config.start;cfgEnd.value=state.config.end;cfgBudget.value=state.config.budget;cfgNotes.value=state.config.notes||'';
+}
+render();
+</script>
+</body>
+</html>
