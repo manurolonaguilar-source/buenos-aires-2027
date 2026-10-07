@@ -101,6 +101,9 @@ h2{font-size:22px;margin:0 0 15px} h3{font-size:17px;margin:0 0 7px}
 .visit-check{width:19px;height:19px;accent-color:var(--green)}
 .main-payment{margin-top:8px;padding:16px;border:1px solid var(--line);border-radius:15px;background:#faf8f6}
 
+
+.trip-suggestion{margin-top:12px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:#fbf7f3;font-size:12px;line-height:1.55}
+.trip-date-badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#efe4da;font-size:10px;font-weight:850;margin-right:5px}
 .event-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:15px}
 .event-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#fff;box-shadow:var(--shadow)}
 .event-card.featured{border:2px solid #b98562}
@@ -315,6 +318,7 @@ table{width:100%;border-collapse:collapse}th,td{padding:11px;border-bottom:1px s
     <div><div class="eyebrow">Planejamento diário</div><h1>Roteiro completo</h1><div class="sub">Um dia por vez, com horários, região, deslocamentos, custos e pequenas ações. Marque o que já foi feito.</div></div>
     <button class="btn" onclick="adicionarAtividade()">+ Adicionar atividade</button>
   </div>
+  <div class="notice" style="margin:0 0 15px"><strong>📅 Datas são editáveis:</strong> altere início e fim em <strong>Configurações → Datas da viagem</strong>. O roteiro se reorganiza automaticamente e, se você aumentar a duração, novas sugestões de passeios são adicionadas.</div>
   <div class="notice" style="margin:0 0 15px"><strong>Como usar:</strong> deixe desmarcado se não foi. Quando você marcar <strong>Fui</strong>, o painel abre o registro do gasto em <strong>ARS</strong>, converte para reais e permite escolher à vista ou cartão, de 1x a 12x, com ou sem juros.</div>
   <div class="itinerary-overview" id="itineraryOverview"></div>
   <div id="itinerary"></div>
@@ -577,6 +581,16 @@ table{width:100%;border-collapse:collapse}th,td{padding:11px;border-bottom:1px s
       </div>
 
       <div class="card">
+        <h2>📅 Datas da viagem</h2>
+        <div class="sub" style="margin-bottom:13px">Mude as datas aqui. O painel recalcula automaticamente a quantidade de dias e reorganiza o roteiro.</div>
+        <div class="formgrid">
+          <div class="field"><label>Data de início</label><input id="cfgStart" type="date" onchange="alterarDatasViagem()"></div>
+          <div class="field"><label>Data de fim</label><input id="cfgEnd" type="date" onchange="alterarDatasViagem()"></div>
+        </div>
+        <div id="tripDateHelp" class="notice" style="margin-top:12px"></div>
+      </div>
+
+      <div class="card" style="margin-top:17px">
         <h2>Custos principais</h2>
         <div class="formgrid">
           <div class="field"><label>Passagens aéreas · 2 pessoas (R$)</label><input id="cfgFlights" type="number" step="0.01" oninput="atualizarPagamentoPrincipal('flights')"></div>
@@ -682,6 +696,8 @@ function verificarLogin(){
 const KEY="ba2027_panel_v2";
 
 const defaultState={
+  tripStart:"2027-02-03",
+  tripEnd:"2027-02-11",
   costs:{
     flights:0, airbnb:0, road:1000, fozHotel:0, localTransport:500,
     food:3000, attractions:400, insurance:250, misc:500
@@ -1030,7 +1046,7 @@ function atualizarParcelamento(){
 function adicionarGasto(){
   modal("Registrar gasto",`
     <div class="formgrid">
-      <div class="field"><label>Data</label><input id="gDate" type="date" value="2027-02-03"></div>
+      <div class="field"><label>Data</label><input id="gDate" type="date" value="${state.tripStart||"2027-02-03"}"></div>
       <div class="field"><label>Descrição</label><input id="gDesc" placeholder="Ex.: jantar, passagem, ingresso"></div>
       <div class="field"><label>Valor total informado</label><input id="gValue" type="number" step="0.01" oninput="atualizarParcelamento()"></div>
       <div class="field"><label>Moeda</label><select id="gCurrency"><option>BRL</option><option>ARS</option></select></div>
@@ -1061,21 +1077,139 @@ function salvarGasto(){
 }
 function excluirGasto(id){state.expenses=state.expenses.filter(x=>x.id!==id);save()}
 
+/* Datas da viagem + roteiro dinâmico */
+function parseDateOnly(s){
+  const [y,m,d]=String(s||"").split("-").map(Number);
+  if(!y||!m||!d)return null;
+  return new Date(Date.UTC(y,m-1,d));
+}
+function isoDate(dt){
+  return `${dt.getUTCFullYear()}-${String(dt.getUTCMonth()+1).padStart(2,"0")}-${String(dt.getUTCDate()).padStart(2,"0")}`;
+}
+function dateLabel(iso){
+  const d=parseDateOnly(iso);
+  if(!d)return "";
+  const wd=["DOM","SEG","TER","QUA","QUI","SEX","SÁB"][d.getUTCDay()];
+  return `${String(d.getUTCDate()).padStart(2,"0")}/${String(d.getUTCMonth()+1).padStart(2,"0")} · ${wd}`;
+}
+function fmtBR(iso){
+  const d=parseDateOnly(iso);
+  return d?`${String(d.getUTCDate()).padStart(2,"0")}/${String(d.getUTCMonth()+1).padStart(2,"0")}/${d.getUTCFullYear()}`:"";
+}
+function daysBetween(start,end){
+  const a=parseDateOnly(start), b=parseDateOnly(end);
+  if(!a||!b)return 0;
+  return Math.floor((b-a)/86400000)+1;
+}
+function cloneItems(items){
+  return (items||[]).map(it=>Array.isArray(it)?[...it]:it);
+}
+function suggestedExtraDay(dateIso,index){
+  const candidates=[
+    ["10:00","🏛","Palacio Barolo + Congreso","Passeio","Arquitetura, mirante e caminhada pelo Centro","Tour a confirmar"],
+    ["10:00","⚽","La Bombonera + La Boca","Passeio","Museu/estádio e continuação pelo bairro","Tour a confirmar"],
+    ["09:30","🌿","Reserva Ecológica Costanera Sur","Passeio","Caminhada ao ar livre perto de Puerto Madero","Grátis"],
+    ["10:00","☕","Café Tortoni + Avenida de Mayo","Passeio","Café histórico e circuito pelo Centro","Consumo no local"],
+    ["10:00","🎨","Museu/galeria de arte em Palermo","Passeio","Dia mais leve para conhecer arte e lojas do bairro","A confirmar"],
+    ["10:00","🛍","Palermo Soho + cafés + compras","Passeio","Dia flexível para lojas, cafés e ruas arborizadas","Variável"],
+    ["09:30","🚤","Delta do Tigre","Passeio","Bate-volta com trem e possibilidade de passeio de barco","A confirmar"],
+    ["10:00","🌸","Jardim Japonês + Bosques de Palermo","Passeio","Natureza, jardins e caminhada tranquila","A confirmar"]
+  ];
+  const pick=candidates[(index-1)%candidates.length];
+  const items=[cloneItems([pick])[0]];
+  if(dateIso==="2027-02-05"){
+    items.unshift(["19:00","🎤","KAROL G","Show","Show internacional no River Plate. Conferir ingresso e horário oficial.","Ingresso a confirmar"]);
+  }
+  items.push(["13:00","🍴","Almoço econômico","Alimentação","Priorizar bodegón, empanadas ou pizza porteña","R$ 80–150 / 2"]);
+  items.push(["16:00","☕","Café + tempo livre","Passeio","Deixar a tarde aberta para um favorito da viagem","R$ 30–70 / 2"]);
+  items.push(["20:00","🍝","Jantar / noite livre","Alimentação","Escolher entre opção econômica ou experiência especial","R$ 100–220 / 2"]);
+  return items;
+}
+function buildTripItinerary(start,end,oldItinerary){
+  const total=daysBetween(start,end);
+  if(total<1||total>60)return null;
+
+  const templates=(defaultState.itinerary||[]).map(d=>({title:d.title,items:cloneItems(d.items)}));
+  const oldByDate=new Map((oldItinerary||[]).map(d=>[d.date,d]));
+  const out=[];
+
+  for(let i=0;i<total;i++){
+    const dt=parseDateOnly(start);
+    dt.setUTCDate(dt.getUTCDate()+i);
+    const iso=isoDate(dt);
+    const first=i===0, last=i===total-1;
+
+    let template=null;
+    if(first) template=templates[0];
+    else if(last) template=templates[templates.length-1];
+    else {
+      const middleIndex=i-1;
+      template=middleIndex<templates.length-2 ? templates[middleIndex+1] : null;
+    }
+
+    const old=oldByDate.get(iso);
+    let items=old ? cloneItems(old.items) : (template ? cloneItems(template.items) : suggestedExtraDay(iso,i));
+
+    if(!old && iso==="2027-02-05" && !items.some(it=>String(it[2]||"").toLowerCase().includes("karol g"))){
+      items.push(["19:00","🎤","KAROL G","Show","Show internacional no River Plate. Conferir ingresso e horário oficial.","Ingresso a confirmar"]);
+    }
+
+    const title=first
+      ? "Chegada e instalação"
+      : last
+        ? "Check-out e retorno"
+        : (template?.title || `Dia extra ${i+1}`);
+
+    out.push({date:iso,label:dateLabel(iso),title,items});
+  }
+  return out;
+}
+function renderTripDateSummary(){
+  const n=daysBetween(state.tripStart,state.tripEnd);
+  const help=document.getElementById("tripDateHelp");
+  if(help){
+    const nights=Math.max(0,n-1);
+    help.innerHTML=`<strong>${n} ${n===1?"dia":"dias"} / ${nights} ${nights===1?"noite":"noites"}</strong> · ${fmtBR(state.tripStart)} → ${fmtBR(state.tripEnd)}.<br>
+    ${n>10
+      ? `Você aumentou a viagem. O painel adicionou <strong>${n-10} ${n-10===1?"dia extra":"dias extras"}</strong> com novas sugestões de passeios.`
+      : n<10
+        ? `O roteiro foi reduzido para ${n} dias, mantendo chegada no primeiro dia e retorno no último.`
+        : `O roteiro de referência está distribuído pelos ${n} dias.`}`;
+  }
+  const sub=document.querySelector("#inicio .sub");
+  if(sub)sub.textContent=`${fmtBR(state.tripStart)} → ${fmtBR(state.tripEnd)} · 2 viajantes`;
+  const foot=document.querySelector(".sidebar-foot");
+  if(foot)foot.innerHTML=`Painel pessoal • 2 viajantes<br>${fmtBR(state.tripStart)} a ${fmtBR(state.tripEnd)}`;
+}
+function alterarDatasViagem(){
+  const start=document.getElementById("cfgStart")?.value;
+  const end=document.getElementById("cfgEnd")?.value;
+  if(!start||!end)return;
+  const n=daysBetween(start,end);
+  if(n<1){alert("A data final precisa ser igual ou posterior à data inicial.");return}
+  if(n>60){alert("Escolha uma viagem de no máximo 60 dias.");return}
+
+  state.tripStart=start;
+  state.tripEnd=end;
+  const next=buildTripItinerary(start,end,state.itinerary);
+  if(next)state.itinerary=next;
+  save();
+  render();
+  renderTripDateSummary();
+}
 /* Roteiro */
 function diaRegiao(d){
-  const map={
-    "2027-02-03":"Dourados → Foz → Buenos Aires",
-    "2027-02-09":"Centro histórico",
-    "2027-02-10":"Recoleta + Palermo",
-    "2027-02-11":"La Boca + Puerto Madero",
-    "2027-02-12":"San Telmo + Costanera Sur",
-    "2027-02-13":"Palermo",
-    "2027-02-14":"Tigre",
-    "2027-02-15":"Centro + Teatro Colón",
-    "2027-02-16":"Dia flexível",
-    "2027-02-11":"Buenos Aires → Foz → Dourados"
-  };
-  return map[d.date]||"Roteiro personalizado";
+  const t=String(d.title||"").toLowerCase();
+  if(t.includes("chegada"))return "Dourados → Foz → Buenos Aires";
+  if(t.includes("retorno")||t.includes("check-out"))return "Buenos Aires → Foz → Dourados";
+  if(t.includes("centro")||t.includes("colón")||t.includes("barolo"))return "Centro";
+  if(t.includes("recoleta"))return "Recoleta";
+  if(t.includes("palermo"))return "Palermo";
+  if(t.includes("boca"))return "La Boca";
+  if(t.includes("san telmo"))return "San Telmo";
+  if(t.includes("tigre")||t.includes("delta"))return "Tigre";
+  if(t.includes("puerto madero")||t.includes("reserva"))return "Puerto Madero";
+  return "Roteiro personalizado";
 }
 function itemDone(it){return !!it[6]}
 function placeImageForItem(title){
@@ -1200,9 +1334,9 @@ function renderItinerary(){
   const daysDone=state.itinerary.filter(d=>d.items.length&&d.items.every(itemDone)).length;
   const spent=state.itinerary.reduce((n,d)=>n+d.items.reduce((s,it)=>s+(Number(it[7]?.brl)||0),0),0);
   document.getElementById("itineraryOverview").innerHTML=`
-    <div class="overview-card"><div class="ov-label">Viagem</div><div class="ov-value">10 dias</div><div class="ov-sub">08 → 17 de fevereiro · 2 viajantes</div></div>
+    <div class="overview-card"><div class="ov-label">Viagem</div><div class="ov-value">${daysBetween(state.tripStart,state.tripEnd)} dias</div><div class="ov-sub">${fmtBR(state.tripStart)} → ${fmtBR(state.tripEnd)} · 2 viajantes</div></div>
     <div class="overview-card"><div class="ov-label">Atividades</div><div class="ov-value">${doneItems}/${totalItems}</div><div class="ov-sub">${totalItems?Math.round(doneItems/totalItems*100):0}% realizadas</div></div>
-    <div class="overview-card"><div class="ov-label">Dias fechados</div><div class="ov-value">${daysDone}/10</div><div class="ov-sub">todos os itens marcados</div></div>
+    <div class="overview-card"><div class="ov-label">Dias fechados</div><div class="ov-value">${daysDone}/${state.itinerary.length}</div><div class="ov-sub">todos os itens marcados</div></div>
     <div class="overview-card"><div class="ov-label">Gasto registrado</div><div class="ov-value">${money(spent)}</div><div class="ov-sub">passeios e atividades marcados</div></div>`;
 
   box.innerHTML=state.itinerary.map((d,di)=>{
@@ -1410,6 +1544,9 @@ function adicionarChecklist(){const t=prompt("Qual item deseja adicionar?");if(t
 
 /* Config */
 function carregarConfig(){
+  const startEl=document.getElementById("cfgStart"), endEl=document.getElementById("cfgEnd");
+  if(startEl)startEl.value=state.tripStart||"2027-02-03";
+  if(endEl)endEl.value=state.tripEnd||"2027-02-11";
   cfgFlights.value=state.costs.flights||"";
   cfgAirbnb.value=state.costs.airbnb||"";
   cfgRoad.value=state.costs.road||"";
@@ -1450,6 +1587,14 @@ function atualizarPagamentoPrincipal(kind){
   }
 }
 function salvarConfig(){
+  const start=document.getElementById("cfgStart")?.value||state.tripStart;
+  const end=document.getElementById("cfgEnd")?.value||state.tripEnd;
+  if(start&&end&&daysBetween(start,end)>0){
+    state.tripStart=start;
+    state.tripEnd=end;
+    const next=buildTripItinerary(start,end,state.itinerary);
+    if(next)state.itinerary=next;
+  }
   state.costs.flights=Number(cfgFlights.value)||0;
   state.costs.airbnb=Number(cfgAirbnb.value)||0;
   state.costs.road=Number(cfgRoad.value)||0;
@@ -1475,8 +1620,18 @@ function salvarNotas(){state.notes=cfgNotes.value;save();alert("Observações sa
 
 /* Render */
 function render(){
+  if(!state.tripStart)state.tripStart="2027-02-03";
+  if(!state.tripEnd)state.tripEnd="2027-02-11";
+  const expected=daysBetween(state.tripStart,state.tripEnd);
+  if(!Array.isArray(state.itinerary)||state.itinerary.length!==expected){
+    const next=buildTripItinerary(state.tripStart,state.tripEnd,state.itinerary);
+    if(next)state.itinerary=next;
+  }else{
+    state.itinerary.forEach(d=>{d.label=dateLabel(d.date)});
+  }
   renderBudget();renderExpenses();renderItinerary();renderPlaces();renderRestaurants();renderChecklist();carregarConfig();renderPayments();
   converter();
+  renderTripDateSummary();
 }
 verificarLogin();
 render();
